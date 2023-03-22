@@ -1,7 +1,13 @@
 import openai
+import os
 
-open.api_key_path = "./api_key.txt"
-
+openai.api_key = os.getenv("OPENAI_API_KEY")
 audio_file= open("./audio/output.mp3", "rb")
 transcript = openai.Audio.transcribe("whisper-1", audio_file)
-print(transcript)
+# Extract the transcript text
+text = transcript["text"]
+
+# Write the text to a file
+with open("transcript.txt", "w", encoding="utf-8") as f:
+    f.write(text)
+print("done!")
