@@ -5,7 +5,7 @@ This program can also re-format the transcript to get different elements needed 
 
 The program performs the blue part of this diagram.
 
-![./figures/post-production-formation-DB.png]
+![](./figures/post-production-formation-DB.png)
 
 ## High level structure 
 
