@@ -1,13 +1,13 @@
-import openai
-import os
+from model import TranscriptionModel
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
-audio_file= open("./audio/output.mp3", "rb")
-transcript = openai.Audio.transcribe("whisper-1", audio_file)
-# Extract the transcript text
-text = transcript["text"]
+def main():
+    model = TranscriptionModel()
+    audio_file = "./audio/output.mp3"
 
-# Write the text to a file
-with open("transcript.txt", "w", encoding="utf-8") as f:
-    f.write(text)
-print("done!")
+    model.load_audio(audio_file)
+    transcript = model.transcribe_audio()
+    model.save_transcript()
+
+if __name__ == "__main__":
+    main()
+

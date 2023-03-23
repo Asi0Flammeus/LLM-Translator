@@ -1,4 +1,4 @@
-import whisper
+import openai
 import requests
 import os
 
@@ -8,15 +8,14 @@ class TranscriptionModel:
     """
 
     # Define constants
-    OPENAI_API_KEY = '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'
     MODEL_ENGINE = 'text-davinci-002'
     AUDIO_EXTENSIONS = ('.wav', '.mp3')
+    openai.api_key = os.getenv("OPENAI_API_KEY")
 
     def __init__(self):
         """
         Initializes the TranscriptionModel instance with the OpenAI API key.
         """
-        self.headers = {'Authorization': f'Bearer {self.OPENAI_API_KEY}'}
         self.transcript = None
         self.formatted_transcript = None
         self.audio_files = []
@@ -48,22 +47,15 @@ class TranscriptionModel:
             raise ValueError("No audio files have been loaded.")
 
         file_path = self.audio_files[0]
-        file_type = os.path.splitext(file_path)[1].lstrip('.')
-        url = "https://transcribe.whisperapi.com"
-        data = {
-            "fileType": file_type,
-            "language": "auto",
-            "task": "transcribe"
-        }
-        files = {'file': open(file_path, 'rb')}
+        audio_file = open(file_path, "rb")
+        transcript = openai.Audio.transcribe("whisper-1", audio_file)
+        audio_file.close()
 
-        response = requests.post(url, headers=self.headers, files=files, data=data)
-        response.raise_for_status()
+        # Extract the transcript text
+        transcript_text = transcript["text"]
+        self.transcript = transcript_text
 
-        transcript = response.json()['text']
-        self.transcript = transcript
-
-        return transcript
+        return transcript_text
 
     def manipulate_text(self, prompt=None):
         """
@@ -94,18 +86,29 @@ class TranscriptionModel:
 
         return formatted_transcript
 
-    def save_transcript(self, file_path):
+    def save_transcript(self):
         """
         Saves the transcript to a file at the specified file path.
 
         Args:
             file_path (str): The path where the transcript file should be saved.
         """
-        if not self.formatted_transcript:
-            raise ValueError("No formatted transcript has been generated.")
+        if not self.transcript:
+            raise ValueError("No transcript has been generated.")
 
-        with open(file_path, 'w') as f:
-            f.write(self.formatted_transcript)
+        # Get the name of the audio file
+        audio_file_name = os.path.basename(self.audio_files[0])
 
-        self.transcript_files.append(file_path)
+        # Create the transcripts directory if it does not exist
+        transcripts_dir = os.path.join(os.path.dirname("./"), "transcripts")
+        os.makedirs(transcripts_dir, exist_ok=True)
+
+        # Use the name of the audio file for the transcript file
+        transcript_file_path = os.path.join(transcripts_dir, os.path.splitext(audio_file_name)[0] + ".txt")
+
+        # Write the transcript text to a file
+        with open(transcript_file_path, "w", encoding="utf-8") as f:
+            f.write(self.transcript)
+
+        self.transcript_files.append(transcript_file_path)
 
