@@ -4,7 +4,8 @@ import os
 
 class TranscriptionModel:
     """
-    This class provides functionality to transcribe audio files using OpenAI's Whisper API and manipulate the resulting transcript using OpenAI's GPT-4 API.
+    This class provides functionality to transcribe audio files using OpenAI's Whisper API
+    and manipulate the resulting transcript using OpenAI's GPT-4 API.
     """
 
     # Define constants
@@ -37,25 +38,36 @@ class TranscriptionModel:
         self.audio_files.append(file_path)
 
     def transcribe_audio(self):
-        """
-        Transcribes the audio data using OpenAI's Whisper API.
+            """
+            Transcribes the audio data using OpenAI's Whisper API.
 
-        Returns:
-            str: The transcript of the audio data in text format.
-        """
-        if not self.audio_files:
-            raise ValueError("No audio files have been loaded.")
+            Returns:
+                str: The transcript of the audio data in text format.
+            """
+            if not self.audio_files:
+                raise ValueError("No audio files have been loaded.")
 
-        file_path = self.audio_files[0]
-        audio_file = open(file_path, "rb")
-        transcript = openai.Audio.transcribe("whisper-1", audio_file)
-        audio_file.close()
+            file_path = self.audio_files[0]
 
-        # Extract the transcript text
-        transcript_text = transcript["text"]
-        self.transcript = transcript_text
+            # Check if a transcript file already exists
+            transcript_file = f"./transcripts/{os.path.splitext(os.path.basename(file_path))[0]}.txt"
+            if os.path.exists(transcript_file):
+                with open(transcript_file, 'r') as f:
+                    transcript_text = f.read()
+                self.transcript = transcript_text
+                return transcript_text
 
-        return transcript_text
+            # Transcribe the audio file
+            audio_file = open(file_path, "rb")
+            transcript = openai.Audio.transcribe("whisper-1", audio_file)
+            audio_file.close()
+
+            # Extract the transcript text
+            transcript_text = transcript["text"]
+            self.transcript = transcript_text
+
+            return transcript_text
+
 
     def manipulate_text(self, prompt=None):
         """
@@ -72,16 +84,16 @@ class TranscriptionModel:
 
         # Use the OpenAI GPT-4 API to manipulate the transcript
         prompt = prompt or "Format the following transcript:\n\n"
-        prompt += f"{self.transcript}\n\nFormatted transcript:"
+        prompt += f"{self.transcript}"
 
-        response = openai.Completion.create(
-            engine=self.MODEL_ENGINE,
-            prompt=prompt,
-            max_tokens=2048,
-            temperature=0.5
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "user", "content": prompt}
+            ]
         )
 
-        formatted_transcript = response.choices[0].text.strip()
+        formatted_transcript = content = response['choices'][0]['message']['content']
         self.formatted_transcript = formatted_transcript
 
         return formatted_transcript
