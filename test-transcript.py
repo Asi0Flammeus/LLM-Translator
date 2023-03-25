@@ -8,11 +8,10 @@ def main():
 
     model.load_audio(audio_file)
     transcript = model.transcribe_audio()
-    print(transcript_file)
     model.save_transcript()
 
     formatted_transcript = model.manipulate_text(prompt=input("Enter a prompt: "))
-    print(formatted_transcript)
+    model.save_manipulated(suffix=input("Enter a suffix for the formatted transcript file name: "))
 
 if __name__ == "__main__":
     main()
