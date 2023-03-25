@@ -1,34 +1,38 @@
 from model import TranscriptionModel
-from view import TranscriptionView
 
 class TranscriptionController:
-    def __init__(self, model, view, args):
-        self.model = model
-        self.view = view
-        self.audio_file = args.audio_file
-        self.prompt = args.prompt
+    def __init__(self):
+        self.model = TranscriptionModel()
 
-    def run(self):
-        # Load the audio file
-        audio_data = self.model.load_audio(self.audio_file)
+    def translate_transcript(self):
+        # Prompt the user to choose a language
+        print("Select a language to translate the transcript:")
+        print("1. English")
+        print("2. German")
+        print("3. Spanish")
+        print("4. Italian")
+        print("5. French")
+        print("6. Portuguese")
 
-        # Transcribe the audio file
-        transcript = self.model.transcribe_audio(audio_data)
+        # Get the user's choice
+        choice = int(input("Enter the number of the language: "))
 
-        # Manipulate the transcript
-        formatted_transcript = self.model.manipulate_text(transcript, self.prompt)
+        # Translate the transcript to the chosen language
+        if choice == 1:
+            language = "en"
+        elif choice == 2:
+            language = "de"
+        elif choice == 3:
+            language = "es"
+        elif choice == 4:
+            language = "it"
+        elif choice == 5:
+            language = "fr"
+        elif choice == 6:
+            language = "pt"
+        else:
+            print("Invalid choice. Please enter a number between 1 and 6.")
+            return
 
-        # Save the formatted transcript
-        output_file = f"{os.path.splitext(self.audio_file)[0]}.txt"
-        self.model.save_transcript(formatted_transcript, output_file)
-
-if __name__ == '__main__':
-    # Create the model, view, and controller objects
-    model = TranscriptionModel()
-    view = TranscriptionView()
-    args = view.get_user_input()
-    controller = TranscriptionController(model, view, args)
-
-    # Run the controller
-    controller.run()
-
+        translated_text = self.model.translate_to(language)
+        print(f"Transcript translated to {language}:")

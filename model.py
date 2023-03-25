@@ -5,7 +5,7 @@ import os
 class TranscriptionModel:
     """
     This class provides functionality to transcribe audio files using OpenAI's Whisper API
-    and manipulate the resulting transcript using OpenAI's GPT-4 API.
+    and manipulate the resulting transcript using OpenAI's GPT-3.5 API.
     """
 
     # Define constants
@@ -55,6 +55,7 @@ class TranscriptionModel:
                 with open(transcript_file, 'r') as f:
                     transcript_text = f.read()
                 self.transcript = transcript_text
+                print("already there")
                 return transcript_text
 
             # Transcribe the audio file
@@ -87,7 +88,7 @@ class TranscriptionModel:
         os.makedirs(transcripts_dir, exist_ok=True)
 
         # Use the name of the audio file for the transcript file
-        transcript_file_path = os.path.join(transcripts_dir, os.path.splitext(audio_file_name)[0] + "_VO_trancript.txt")
+        transcript_file_path = os.path.join(transcripts_dir, os.path.splitext(audio_file_name)[0] + "_VO_transcript.txt")
 
         # Write the transcript text to a file
         with open(transcript_file_path, "w", encoding="utf-8") as f:
@@ -98,7 +99,7 @@ class TranscriptionModel:
 
     def manipulate_text(self, prompt=None):
         """
-        Manipulates the transcript text using OpenAI's GPT-4 API.
+        Manipulates the transcript text using OpenAI's GPT-3.5 API.
 
         Args:
             prompt (str, optional): The prompt to use for text manipulation. Defaults to None.
@@ -109,7 +110,7 @@ class TranscriptionModel:
         if not self.transcript:
             raise ValueError("No transcript has been generated.")
 
-        # Use the OpenAI GPT-4 API to manipulate the transcript
+        # Use the OpenAI GPT-3.5 API to manipulate the transcript
         prompt = prompt or "Format the following transcript:\n\n"
         prompt += f"{self.transcript}"
 
@@ -125,7 +126,8 @@ class TranscriptionModel:
 
         return formatted_transcript
 
-    def save_manipulated(self, suffix):
+
+    def save_manipulated_text(self, text, suffix):
         """
         Manipulates the transcript text using OpenAI's GPT-4 API and saves the resulting formatted transcript to a file.
 
@@ -133,7 +135,7 @@ class TranscriptionModel:
             suffix (str): The suffix to use for the saved transcript file name.
         """
         # Manipulate the transcript text
-        formatted_transcript = self.formatted_transcript
+        formatted_transcript = text
 
         # Get the name of the audio file
         audio_file_name = os.path.basename(self.audio_files[0])
@@ -151,3 +153,18 @@ class TranscriptionModel:
 
         self.transcript_files.append(transcript_file_path)
 
+
+    def translate_to(self, language):
+        """
+        Translates the transcript to the specified language using OpenAI's GPT-4 API.
+
+        Args:
+            language (str): The language code for the target language (e.g., "en", "de", "es", "it", "fr", "pt").
+
+        Returns:
+            str: The translated transcript in text format.
+        """
+
+        prompt=f"Translate the following transcript to {language}:\n\n"
+        suffix=f"{language}_transcript_translation"
+        self.save_manipulated_text(self.manipulate_text(prompt),suffix)
