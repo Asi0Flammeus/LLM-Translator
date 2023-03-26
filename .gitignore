@@ -2,3 +2,5 @@ __pycache__/
 .bashrc
 .bash_profile
 env/
+audio/
+outputs/
