@@ -1,5 +1,28 @@
 import os
-class TranscriptionViewCLI:
+
+class View:
+    def get_audio_file(self):
+        pass
+
+    def transcribing_in_progress(self):
+        pass
+
+    def show_transcript(self, transcript):
+        pass
+
+    def save_transcript(self, transcript_file):
+        pass
+
+    def get_translation_language(self):
+        pass
+
+    def show_translated_transcript(self):
+        pass
+
+    def stop_script(self):
+        pass
+
+class ViewCLI(View):
     def __init__(self, controller):
         self.controller = controller
 
@@ -7,6 +30,7 @@ class TranscriptionViewCLI:
         audio_dir = "./audio"
         audio_files = [f for f in os.listdir(audio_dir) if f.endswith(".mp3") or f.endswith(".wav")]
 
+        print()
         print("Select an audio file to transcribe:")
         for i, f in enumerate(audio_files):
             print(f"{i+1}. {f}")
@@ -16,11 +40,17 @@ class TranscriptionViewCLI:
 
         return audio_file
 
+    def transcribing_in_progress(self):
+        print()
+        print("Transcribing in progress...")
+
     def show_transcript(self, transcript):
+        print()
         print("Transcript generated:")
         print(transcript)
 
     def save_transcript(self, transcript_file):
+        print()
         print(f"Transcript saved to {transcript_file}")
 
     def get_translation_language(self):
@@ -35,6 +65,7 @@ class TranscriptionViewCLI:
         }
 
         # Print the list of available languages
+        print()
         print("Select a language to translate the transcript to:")
         for i, (code, name) in enumerate(language_codes.items()):
             print(f"{i+1}. {name} ({code})")
@@ -46,6 +77,12 @@ class TranscriptionViewCLI:
         language_code = list(language_codes.keys())[choice-1]
         return language_code
 
-    def show_translated_transcript(self):
+    def show_translated_transcript(self):]
+        print()
         print("Translated transcript saved!")
+
+    def stop_script(self):
+        choice = input("Do you want to stop the script? (y/n): ")
+        if choice.lower() == "y":
+            exit()
 
