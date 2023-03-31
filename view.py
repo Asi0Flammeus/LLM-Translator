@@ -77,7 +77,7 @@ class ViewCLI(View):
         language_code = list(language_codes.keys())[choice-1]
         return language_code
 
-    def show_translated_transcript(self):]
+    def show_translated_transcript(self):
         print()
         print("Translated transcript saved!")
 
