@@ -1,38 +1,33 @@
 from model import TranscriptionModel
+from view import ViewCLI
+import os
 
 class TranscriptionController:
     def __init__(self):
         self.model = TranscriptionModel()
+        self.view = ViewCLI(self)
 
-    def translate_transcript(self):
-        # Prompt the user to choose a language
-        print("Select a language to translate the transcript:")
-        print("1. English")
-        print("2. German")
-        print("3. Spanish")
-        print("4. Italian")
-        print("5. French")
-        print("6. Portuguese")
+    def run(self):
+        while True:
+            audio_file = self.view.get_audio_file()
+            self.load_and_transcribe_audio(audio_file)
+            translation_language = self.view.get_translation_language()
+            self.translate_and_show_transcript(translation_language)
 
-        # Get the user's choice
-        choice = int(input("Enter the number of the language: "))
+            if not self.view.ask_continue():
+                break
 
-        # Translate the transcript to the chosen language
-        if choice == 1:
-            language = "en"
-        elif choice == 2:
-            language = "de"
-        elif choice == 3:
-            language = "es"
-        elif choice == 4:
-            language = "it"
-        elif choice == 5:
-            language = "fr"
-        elif choice == 6:
-            language = "pt"
-        else:
-            print("Invalid choice. Please enter a number between 1 and 6.")
-            return
+    def load_and_transcribe_audio(self, audio_file):
+        self.model.load_audio(audio_file)
+        self.view.work_in_progress()
+        transcript = self.model.transcribe_multiple_chunks_audio()
+        self.view.show_transcript(transcript)
+        transcript_file = os.path.join("transcripts", os.path.splitext(os.path.basename(audio_file))[0] + ".txt")
+        self.model.save_transcript()
+        self.view.save_transcript(transcript_file)
 
-        translated_text = self.model.translate_to(language)
-        print(f"Transcript translated to {language}:")
+    def translate_and_show_transcript(self, language):
+        self.view.work_in_progress()
+        translation = self.model.translate_to(language)
+        self.view.show_translated_transcript()
+

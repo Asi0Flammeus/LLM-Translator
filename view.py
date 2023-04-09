@@ -4,7 +4,7 @@ class View:
     def get_audio_file(self):
         pass
 
-    def transcribing_in_progress(self):
+    def work_in_progress(self):
         pass
 
     def show_transcript(self, transcript):
@@ -21,6 +21,10 @@ class View:
 
     def stop_script(self):
         pass
+
+    def ask_continue(self):
+        pass
+
 
 class ViewCLI(View):
     def __init__(self, controller):
@@ -40,9 +44,9 @@ class ViewCLI(View):
 
         return audio_file
 
-    def transcribing_in_progress(self):
+    def work_in_progress(self):
         print()
-        print("Transcribing in progress...")
+        print("Work in progress...")
 
     def show_transcript(self, transcript):
         print()
@@ -86,3 +90,6 @@ class ViewCLI(View):
         if choice.lower() == "y":
             exit()
 
+    def ask_continue(self):
+        choice = input("Manipulate another audio file? (y/n): ").lower()
+        return choice == "y"

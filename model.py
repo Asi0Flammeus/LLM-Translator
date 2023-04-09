@@ -34,6 +34,7 @@ class TranscriptionModel:
         """
         self.transcript = None
         self.formatted_transcript = []
+        self.original_audio_file = []
         self.audio_files = []
         self.transcript_files = []
 
@@ -49,6 +50,7 @@ class TranscriptionModel:
         """
         if not os.path.isfile(file_path) or not file_path.endswith(self.AUDIO_EXTENSIONS):
             raise ValueError(f"Invalid audio file: {file_path}")
+        self.original_audio_file.append(file_path)
 
         # Check the size of the audio file
         audio_size_mb = os.path.getsize(file_path) / (1024 * 1024)
@@ -78,18 +80,8 @@ class TranscriptionModel:
             if not self.audio_files:
                 raise ValueError("No audio files have been loaded.")
 
-            file_path = self.audio_files[0]
-
-            # Check if a transcript file already exists
-            transcript_file = f"./outputs/{os.path.splitext(os.path.basename(file_path))[0]}_VO_transcript.txt"
-            if os.path.exists(transcript_file):
-                with open(transcript_file, 'r') as f:
-                    transcript_text = f.read()
-                self.transcript = transcript_text
-                print("already there")
-                return transcript_text
-
             # Transcribe the audio file
+            file_path = self.audio_files[0]
             audio_file = open(file_path, "rb")
             transcript = openai.Audio.transcribe("whisper-1", audio_file)
             audio_file.close()
@@ -109,10 +101,20 @@ class TranscriptionModel:
         if not self.audio_files:
             raise ValueError("No audio files have been loaded.")
 
+        # Check if a transcript file already exists
+        file_path = self.original_audio_file[0]
+        transcript_file = f"./outputs/{os.path.splitext(os.path.basename(file_path))[0]}_VO_transcript.txt"
+        if os.path.exists(transcript_file):
+            with open(transcript_file, 'r') as f:
+                transcript_text = f.read()
+            self.transcript = transcript_text
+            print("already there")
+            return transcript_text
+
         # Transcribe each audio file
         transcript_texts = []
         while self.audio_files:
-            transcript_text = transcribe_audio
+            transcript_text = self.transcribe_audio()
             transcript_texts.append(transcript_text)
             self.audio_files.pop(0)
 
@@ -132,7 +134,7 @@ class TranscriptionModel:
             raise ValueError("No transcript has been generated.")
 
         # Get the name of the audio file
-        audio_file_name = os.path.basename(self.audio_files[0])
+        audio_file_name = os.path.basename(self.original_audio_file[0])
 
         # Create the transcripts directory if it does not exist
         transcripts_dir = os.path.join(os.path.dirname("./"), "outputs")
@@ -189,7 +191,7 @@ class TranscriptionModel:
         formatted_transcript = text
 
         # Get the name of the audio file
-        audio_file_name = os.path.basename(self.audio_files[0])
+        audio_file_name = os.path.basename(self.original_audio_file[0])
 
         # Create the transcripts directory if it does not exist
         transcripts_dir = os.path.join(os.path.dirname("./"), "outputs")
