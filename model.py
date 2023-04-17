@@ -1,6 +1,7 @@
 import openai
 import requests
 import os
+from pydub import AudioSegment
 
 class TranscriptionModel:
     """
@@ -10,21 +11,7 @@ class TranscriptionModel:
 
     # Define constants
     MODEL_ENGINE = "gpt-3.5-turbo"
-    AUDIO_EXTENSIONS = ('.wav', '.mp3')
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-
-    def __init__(self):
-        """
-        Initializes the TranscriptionModel instance with the OpenAI API key.
-        """
-        self.transcript = None
-        self.formatted_transcript = []
-        self.audio_files = []
-        self.transcript_files = []
-
-    # Define constants
-    MODEL_ENGINE = "gpt-3.5-turbo"
-    AUDIO_EXTENSIONS = ('.wav', '.mp3')
+    AUDIO_EXTENSIONS = ('.wav', '.mp3', '.m4a', '.webm', '.mp4', '.mpga', '.mpeg')
     MAX_AUDIO_SIZE_MB = 20  # (a bit smaller than the) Maximum audio size supported by Whisper API in MB
     openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -56,18 +43,15 @@ class TranscriptionModel:
         audio_size_mb = os.path.getsize(file_path) / (1024 * 1024)
         if audio_size_mb > self.MAX_AUDIO_SIZE_MB:
             # Split the audio file into chunks of MaximumSizeFile MB
-            chunk_size_mb = self.MAX_AUDIO_SIZE_MB
-            with open(file_path, "rb") as f:
-                chunk = f.read(chunk_size_mb * 1024 * 1024)
-                i = 0
-                while chunk:
-                    chunk_file_path = f"{os.path.splitext(file_path)[0]}_{i}{os.path.splitext(file_path)[1]}"
-                    print(chunk_file_path)
-                    with open(chunk_file_path, "wb") as chunk_file:
-                        chunk_file.write(chunk)
-                    self.audio_files.append(chunk_file_path)
-                    i += 1
-                    chunk = f.read(chunk_size_mb * 1024 * 1024)
+            chunk_size_ms = self.MAX_AUDIO_SIZE_MB * 1024 * 1024 * 8 // 1000  # Chunk size in milliseconds
+
+            audio = AudioSegment.from_file(file_path)
+            duration_ms = len(audio)
+            for i in range(0, duration_ms, chunk_size_ms):
+                chunk = audio[i:i + chunk_size_ms]
+                chunk_file_path = f"{os.path.splitext(file_path)[0]}_{i // chunk_size_ms}{os.path.splitext(file_path)[1]}"
+                chunk.export(chunk_file_path, format=file_path.split('.')[-1])
+                self.audio_files.append(chunk_file_path)
         else:
             self.audio_files.append(file_path)
 
