@@ -64,7 +64,6 @@ class ViewCLI(View):
             "de": "German",
             "es": "Spanish",
             "it": "Italian",
-            "fr": "French",
             "pt": "Portuguese"
         }
 

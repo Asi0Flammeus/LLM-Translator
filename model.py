@@ -105,9 +105,17 @@ class TranscriptionModel:
 
         # Transcribe each audio file
         transcript_texts = []
+
+        # Make sure that sub audio file will be deleted
+        if len(self.audio_files) > 1:
+            sub_audio_file = True
+
         while self.audio_files:
             transcript_text = self.transcribe_audio()
             transcript_texts.append(transcript_text)
+            # Delete the sub audio file
+            if sub_audio_file:
+                os.remove(self.audio_files[0])
             self.audio_files.pop(0)
 
         # Concatenate the transcript texts into a single string
