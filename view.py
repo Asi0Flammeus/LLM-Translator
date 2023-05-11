@@ -76,10 +76,11 @@ class ViewCLI(View):
 
         # Get the user's choice
         choice = int(input("Enter the number of the language: "))
-        print(choice)
         # Convert the user's choice to a language code
         language_code = list(language_codes.keys())[choice-1]
-        return language_code
+        language_name = language_codes[language_code]
+
+        return language_name
 
     def show_translated_transcript(self):
         print()
