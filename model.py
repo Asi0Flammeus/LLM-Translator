@@ -1,7 +1,15 @@
+import re
 import openai
+import tiktoken
 import requests
 import os
 from pydub import AudioSegment
+
+def num_tokens_from_string(string: str, encoding_name: str) -> int:
+    """Returns the number of tokens in a text string."""
+    encoding = tiktoken.get_encoding(encoding_name)
+    num_tokens = len(encoding.encode(string))
+    return num_tokens
 
 class TranscriptionModel:
     """
@@ -134,7 +142,7 @@ class TranscriptionModel:
         self.transcript_files.append(transcript_file_path)
 
 
-    def manipulate_text(self, prompt=None):
+    def manipulate_text(self, prompt):
         """
         Manipulates the transcript text using OpenAI's GPT-3.5 API.
 
@@ -148,14 +156,12 @@ class TranscriptionModel:
             raise ValueError("No transcript has been generated.")
 
         # Use the OpenAI GPT-3.5 API to manipulate the transcript
-        prompt = prompt or "Format the following transcript:\n\n"
-        prompt += f"{self.transcript}"
-
         response = openai.ChatCompletion.create(
             model = "gpt-3.5-turbo",
             messages=[
                 {"role": "user", "content": prompt}
-            ]
+            ],
+            temperature=0.2
         )
 
         formatted_transcript = content = response['choices'][0]['message']['content']
@@ -193,18 +199,60 @@ class TranscriptionModel:
 
     def translate_to(self, language):
         """
-        Translates the transcript to the specified language using OpenAI's GPT-4 API.
+        Translates the transcript to the specified language using OpenAI's API.
 
         Args:
             language (str): The language code for the target language (e.g., "en", "de", "es", "it", "fr", "pt").
-
-        Returns:
-            str: The translated transcript in text format.
         """
 
-        prompt=f"Translate the following transcript to {language}:\n\n"
-        suffix=f"{language}_transcript_translation"
-        self.save_manipulated_text(self.manipulate_text(prompt),suffix)
+        if not self.transcript:
+            raise ValueError("No transcript has been generated.")
+
+        # Count the tokens of the input
+        ENCODING_NAME = "cl100k_base"
+        token_count = num_tokens_from_string(self.transcript, ENCODING_NAME)
+        # Split the transcript into < 4000 token chunks while preserving sentences/paragraphs
+        chunks = []
+        MAX_TOKENS = 1000
+        current_chunk = ""
+        current_tokens = 0
+
+        sentences = re.split(r'\.\s+', self.transcript)  # Split the long string into sentences
+
+        chunks = []
+        current_chunk = ""
+
+        for sentence in sentences:
+            sentence_tokens = num_tokens_from_string(sentence, ENCODING_NAME)
+
+            if sentence_tokens + num_tokens_from_string(current_chunk, ENCODING_NAME) <= MAX_TOKENS:
+                current_chunk += sentence + ". "
+            else:
+                chunks.append(current_chunk.strip())
+                current_chunk = sentence
+
+        # Add the last remaining chunk
+        if current_chunk:
+            chunks.append(current_chunk.strip())
+        print(len(chunks))
+        print()
+        # Translate each chunk
+        translated_chunks = []
+        for chunk in chunks:
+            prompt = f"translate the following transcript into {language}, ensuring all sentences are accurately translated in the output because it will be used as substitles. Therefore the output must have the same structure has the original transcript: '{chunk}'"
+            translated_chunk = self.manipulate_text(prompt)
+            translated_chunks.append(translated_chunk)
+            print(chunk)
+            print()
+            print(translated_chunk)
+            print()
+
+        # Merge all translated output into a single string
+        translated_transcript = "\n".join(translated_chunks)
+
+        # Save the result in a txt file
+        suffix = f"{language}_transcript_translation"
+        self.save_manipulated_text(translated_transcript, suffix)
 
     def write_synthetic_lecture(self):
         """
