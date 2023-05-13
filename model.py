@@ -11,6 +11,37 @@ def num_tokens_from_string(string: str, encoding_name: str) -> int:
     num_tokens = len(encoding.encode(string))
     return num_tokens
 
+def split_text_into_chunks(text: str, MAX_TOKENS: int = 1000, ENCODING_NAME: str = "cl100k_base") -> list:
+    """
+    Splits the input text into chunks with a maximum token count.
+
+    Args:
+        text (str): The input text to be split.
+        MAX_TOKENS (int): The maximum token count for each chunk (default: 1000).
+        ENCODING_NAME (str): The encoding name to be used for tokenization (default: "cl100k_base").
+
+    Returns:
+        list: The list of chunks.
+    """
+    # Split the transcript into < 1000 token chunks while preserving sentences/paragraphs
+    chunks = []
+    sentences = re.split(r'\.\s+', text)  # Split the long string into sentences
+    current_chunk = ""
+
+    for sentence in sentences:
+        sentence_tokens = num_tokens_from_string(sentence, ENCODING_NAME)
+
+        if sentence_tokens + num_tokens_from_string(current_chunk, ENCODING_NAME) <= MAX_TOKENS:
+            current_chunk += sentence + ". "
+        else:
+            chunks.append(current_chunk.strip())
+            current_chunk = sentence
+
+    # Add the last remaining chunk
+    if current_chunk:
+        chunks.append(current_chunk.strip())
+    return chunks
+
 class TranscriptionModel:
     """
     This class provides functionality to transcribe audio files using OpenAI's Whisper API
@@ -32,6 +63,29 @@ class TranscriptionModel:
         self.original_audio_file = []
         self.audio_files = []
         self.transcript_files = []
+
+    def save_text(self, text: str, suffix: str):
+        """
+        Save a text to the output folder with a specific suffix.
+
+        Args:
+            text (str): The text to be saved.
+            suffix (str): The suffix to use for the saved text file name.
+        """
+
+        # Get the name of the audio file
+        audio_file_name = os.path.basename(self.original_audio_file[0])
+
+        # Create the output directory if it does not exist
+        output_dir = os.path.join(os.path.dirname("./"), "outputs")
+        os.makedirs(output_dir, exist_ok=True)
+
+        # Use the name of the audio file and the given suffix for the text file
+        file_path = os.path.join(output_dir, os.path.splitext(audio_file_name)[0] + f"_{suffix}.txt")
+
+        # Write the formatted transcript text to a file
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(text)
 
     def load_audio(self, file_path):
         """
@@ -93,14 +147,24 @@ class TranscriptionModel:
         if not self.audio_files:
             raise ValueError("No audio files have been loaded.")
 
+        # Make sure that sub audio files will be deleted
+        if len(self.audio_files) > 1:
+            sub_audio_file = True
+
         # Check if a transcript file already exists
         file_path = self.original_audio_file[0]
-        transcript_file = f"./outputs/{os.path.splitext(os.path.basename(file_path))[0]}_VO_transcript.txt"
+        transcript_file = f"./outputs/{os.path.splitext(os.path.basename(file_path))[0]}_French_transcript.txt"
+
         if os.path.exists(transcript_file):
             with open(transcript_file, 'r') as f:
                 transcript_text = f.read()
             self.transcript = transcript_text
             print("already there")
+            while self.audio_files:
+                # Delete the sub audio file
+                if sub_audio_file:
+                    os.remove(self.audio_files[0])
+                self.audio_files.pop(0)
             return transcript_text
 
         # Transcribe each audio file
@@ -121,36 +185,12 @@ class TranscriptionModel:
         # Concatenate the transcript texts into a single string
         self.transcript = " ".join(transcript_texts)
 
+        # Save the transcript to the output directory
+        self.save_text(self.transcript, "French_transcript")
+
         return self.transcript
 
-    def save_transcript(self):
-        """
-        Saves the transcript to a file at the specified file path.
-
-        Args:
-            file_path (str): The path where the transcript file should be saved.
-        """
-        if not self.transcript:
-            raise ValueError("No transcript has been generated.")
-
-        # Get the name of the audio file
-        audio_file_name = os.path.basename(self.original_audio_file[0])
-
-        # Create the transcripts directory if it does not exist
-        transcripts_dir = os.path.join(os.path.dirname("./"), "outputs")
-        os.makedirs(transcripts_dir, exist_ok=True)
-
-        # Use the name of the audio file for the transcript file
-        transcript_file_path = os.path.join(transcripts_dir, os.path.splitext(audio_file_name)[0] + "_VO_transcript.txt")
-
-        # Write the transcript text to a file
-        with open(transcript_file_path, "w", encoding="utf-8") as f:
-            f.write(self.transcript)
-
-        self.transcript_files.append(transcript_file_path)
-
-
-    def manipulate_text(self, prompt):
+    def manipulate_text(self, prompt, temperature):
         """
         Manipulates the transcript text using OpenAI's GPT-3.5 API.
 
@@ -160,8 +200,6 @@ class TranscriptionModel:
         Returns:
             str: The formatted transcript in text format.
         """
-        if not self.transcript:
-            raise ValueError("No transcript has been generated.")
 
         # Use the OpenAI GPT-3.5 API to manipulate the transcript
         response = openai.ChatCompletion.create(
@@ -169,7 +207,7 @@ class TranscriptionModel:
             messages=[
                 {"role": "user", "content": prompt}
             ],
-            temperature=0.2
+            temperature=temperature
         )
 
         formatted_transcript = content = response['choices'][0]['message']['content']
@@ -177,32 +215,6 @@ class TranscriptionModel:
 
         return formatted_transcript
 
-
-    def save_manipulated_text(self, text, suffix):
-        """
-        Manipulates the transcript text using OpenAI's GPT-4 API and saves the resulting formatted transcript to a file.
-
-        Args:
-            suffix (str): The suffix to use for the saved transcript file name.
-        """
-        # Manipulate the transcript text
-        formatted_transcript = text
-
-        # Get the name of the audio file
-        audio_file_name = os.path.basename(self.original_audio_file[0])
-
-        # Create the transcripts directory if it does not exist
-        transcripts_dir = os.path.join(os.path.dirname("./"), "outputs")
-        os.makedirs(transcripts_dir, exist_ok=True)
-
-        # Use the name of the audio file and the given suffix for the transcript file
-        transcript_file_path = os.path.join(transcripts_dir, os.path.splitext(audio_file_name)[0] + f"_{suffix}.txt")
-
-        # Write the formatted transcript text to a file
-        with open(transcript_file_path, "w", encoding="utf-8") as f:
-            f.write(formatted_transcript)
-
-        self.transcript_files.append(transcript_file_path)
 
 
     def translate_to(self, language):
@@ -213,63 +225,107 @@ class TranscriptionModel:
             language (str): The language code for the target language (e.g., "en", "de", "es", "it", "fr", "pt").
         """
 
-        if not self.transcript:
-            raise ValueError("No transcript has been generated.")
+        # Check if a transcript file already exists
+        file_path = self.original_audio_file[0]
+        transcript_file = f"./outputs/{os.path.splitext(os.path.basename(file_path))[0]}_{language}_transcript.txt"
+        if os.path.exists(transcript_file):
+            print("already there")
+            return
 
-        # Count the tokens of the input
-        ENCODING_NAME = "cl100k_base"
-        token_count = num_tokens_from_string(self.transcript, ENCODING_NAME)
-        # Split the transcript into < 4000 token chunks while preserving sentences/paragraphs
-        chunks = []
-        MAX_TOKENS = 1000
-        current_chunk = ""
-        current_tokens = 0
+        # Split the transcript into < 1000 token chunks while preserving sentences/paragraphs
+        chunks = split_text_into_chunks(self.transcript)
 
-        sentences = re.split(r'\.\s+', self.transcript)  # Split the long string into sentences
-
-        chunks = []
-        current_chunk = ""
-
-        for sentence in sentences:
-            sentence_tokens = num_tokens_from_string(sentence, ENCODING_NAME)
-
-            if sentence_tokens + num_tokens_from_string(current_chunk, ENCODING_NAME) <= MAX_TOKENS:
-                current_chunk += sentence + ". "
-            else:
-                chunks.append(current_chunk.strip())
-                current_chunk = sentence
-
-        # Add the last remaining chunk
-        if current_chunk:
-            chunks.append(current_chunk.strip())
-        print(len(chunks))
-        print()
         # Translate each chunk
         translated_chunks = []
         for chunk in chunks:
             prompt = f"translate the following transcript into {language}, ensuring all sentences are accurately translated in the output because it will be used as substitles. Therefore the output must have the same structure has the original transcript: '{chunk}'"
-            translated_chunk = self.manipulate_text(prompt)
+            temperature = 0.2
+            translated_chunk = self.manipulate_text(prompt, temperature)
             translated_chunks.append(translated_chunk)
-            print(chunk)
-            print()
-            print(translated_chunk)
-            print()
 
         # Merge all translated output into a single string
         translated_transcript = "\n".join(translated_chunks)
 
         # Save the result in a txt file
-        suffix = f"{language}_transcript_translation"
-        self.save_manipulated_text(translated_transcript, suffix)
+        suffix = f"{language}_transcript"
+        self.save_text(translated_transcript, suffix)
 
-    def write_synthetic_lecture(self):
+
+    def write_synthetic_lecture(self, language):
         """
-        writes a synthetic lecture that would be based on the transcript text in a markdown format.
+        Writes a synthetic lecture that would be based on the transcript text in a markdown format.
+        Uses the GPT-3.5 API to generate essential points from the transcript, create an outline,
+        and then elaborate the outline into a full lecture.
+
+        Args:
+            language (str): The language code for the language in which the lecture is to be written.
 
         Returns:
             str: The transcript formatted into a synthetic lecture.
         """
 
-        prompt=f"Reformulate the following transcript into a synthetic and structured lecture in markdown format:"
-        suffix=f"cours_academic_FR"
-        self.save_manipulated_text(self.manipulate_text(prompt),suffix)
+        # Check if essential points file already exists
+        file_path = self.original_audio_file[0]
+        essential_points_file = f"./outputs/{os.path.splitext(os.path.basename(file_path))[0]}_{language}_essential_points.txt"
+        if os.path.exists(essential_points_file):
+            print("essential points already there")
+            with open(essential_points_file, 'r', encoding='utf-8') as f:
+                essential_points_string = f.read()
+            print(essential_points_string)
+        else:
+            # Load the transcript from the output folder
+            audio_file_name = os.path.basename(self.original_audio_file[0])
+            transcript_file_path = os.path.join("./outputs", os.path.splitext(audio_file_name)[0] + f"_{language}_transcript.txt")
+
+            with open(transcript_file_path, 'r', encoding='utf-8') as f:
+                input_transcript = f.read()
+
+            # Create multiple chunks of the transcript
+            chunks = split_text_into_chunks(input_transcript)
+
+            # Extract essential points from each chunk
+            essential_points = []
+            for chunk in chunks:
+                prompt = f"make a small list of the essential points from the following transcript. It will later used for writing a lecture. You must write in {language} and be hyper conscice: '{chunk}'"
+                temperature = 0.8
+                essential_point = self.manipulate_text(prompt, temperature)
+                print(essential_point)
+                essential_points.append(essential_point)
+
+            # Join the essential points into a single string
+            essential_points_string = " ".join(essential_points)
+
+            # Save the essential points
+            suffix = f"{language}_essential_points"
+            self.save_text(essential_points_string, suffix)
+
+        # Check if outline file already exists
+        file_path = self.original_audio_file[0]
+        outline_file = f"./outputs/{os.path.splitext(os.path.basename(file_path))[0]}_{language}_outline.txt"
+        if os.path.exists(outline_file):
+            print("outline already there")
+            with open(outline_file, 'r', encoding='utf-8') as f:
+                outline = f.read()
+            print(outline)
+        else:
+            # Create an outline from the essential points
+            prompt = f"Based on the given key points, write only the three main sections title for a lecture with no subsection, no introduction nor conclusion. The outline should be written in {language}: '{essential_points_string}'"
+            temperature = 0.2
+            outline = self.manipulate_text(prompt, temperature)
+
+            # Save the essential points
+            suffix = f"{language}_outline"
+            self.save_text(outline, suffix)
+            print("outline:")
+            print(outline)
+
+        prompt = f"Write in '{language}' an instructive lecture, composed of several paragraphs based on the following outline:\n'{outline}'\n. Do not repeat yourself. Specify the sections with the markdown syntax. Base your facts and ideas on this list:\n '{essential_points_string}'"
+        temperature = 0.5
+        lecture = self.manipulate_text(prompt, temperature)
+
+        # Join the lecture parts into a single string and save it as a markdown file
+        suffix = f"{language}_lecture"
+        self.save_text(lecture, suffix)
+
+        return lecture
+
