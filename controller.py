@@ -31,7 +31,6 @@ class TranscriptionController:
         transcript = self.model.transcribe_multiple_chunks_audio()
         self.view.show_transcript(transcript)
         transcript_file = os.path.join("transcripts", os.path.splitext(os.path.basename(audio_file))[0] + ".txt")
-        self.model.save_transcript()
         self.view.save_transcript(transcript_file)
 
     def translate_and_show_transcript(self, language):
