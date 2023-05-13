@@ -57,9 +57,10 @@ class ViewCLI(View):
         print()
         print(f"Transcript saved to {transcript_file}")
 
-    def get_translation_language(self):
+    def get_language(self):
         # Define a dictionary of language codes and names
         language_codes = {
+            "fr": "French",
             "en": "English",
             "de": "German",
             "es": "Spanish",
