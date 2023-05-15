@@ -217,23 +217,25 @@ class TranscriptionModel:
 
 
 
-    def translate_to(self, language):
+    def translate_to(self, text:str, post_suffix:str, language:str):
         """
         Translates the transcript to the specified language using OpenAI's API.
 
         Args:
+            text (str): the text to be translated
+            post_suffix (str): The suffix for the name of the output which define the nature of text
             language (str): The language code for the target language (e.g., "en", "de", "es", "it", "fr", "pt").
         """
 
         # Check if a transcript file already exists
         file_path = self.original_audio_file[0]
-        transcript_file = f"./outputs/{os.path.splitext(os.path.basename(file_path))[0]}_{language}_transcript.txt"
+        transcript_file = f"./outputs/{os.path.splitext(os.path.basename(file_path))[0]}_{language}_{post_suffix}.txt"
         if os.path.exists(transcript_file):
             print("already there")
             return
 
-        # Split the transcript into < 1000 token chunks while preserving sentences/paragraphs
-        chunks = split_text_into_chunks(self.transcript)
+        # Split the text into < 1000 token chunks while preserving sentences/paragraphs
+        chunks = split_text_into_chunks(text)
 
         # Translate each chunk
         translated_chunks = []
@@ -244,11 +246,11 @@ class TranscriptionModel:
             translated_chunks.append(translated_chunk)
 
         # Merge all translated output into a single string
-        translated_transcript = "\n".join(translated_chunks)
+        translated_text = "\n".join(translated_chunks)
 
         # Save the result in a txt file
-        suffix = f"{language}_transcript"
-        self.save_text(translated_transcript, suffix)
+        suffix = f"{language}_{post_suffix}"
+        self.save_text(translated_text, suffix)
 
 
     def write_synthetic_lecture(self, language):

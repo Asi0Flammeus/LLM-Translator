@@ -1,96 +1,45 @@
 import os
 
-class View:
-    def get_audio_file(self):
-        pass
-
-    def work_in_progress(self):
-        pass
-
-    def show_transcript(self, transcript):
-        pass
-
-    def save_transcript(self, transcript_file):
-        pass
-
-    def get_translation_language(self):
-        pass
-
-    def show_translated_transcript(self):
-        pass
-
-    def stop_script(self):
-        pass
-
-    def ask_continue(self):
-        pass
-
-
-class ViewCLI(View):
+class ViewCLI():
     def __init__(self, controller):
         self.controller = controller
 
-    def get_audio_file(self):
-        audio_dir = "./audio"
-        audio_files = [f for f in os.listdir(audio_dir) if f.endswith(".mp3") or f.endswith(".wav")]
+    def get_audio_folder(self):
+        root_dir = "./audio/" # or specify your root directory if different
+        folders = [f.path for f in os.scandir(root_dir) if f.is_dir()]
 
         print()
-        print("Select an audio file to transcribe:")
-        for i, f in enumerate(audio_files):
-            print(f"{i+1}. {f}")
+        print("Select a folder to process:")
+        for i, folder in enumerate(folders):
+            print(f"{i+1}. {folder}")
 
-        choice = int(input("Enter the number of the audio file: "))
-        audio_file = os.path.join(audio_dir, audio_files[choice-1])
+        choice = int(input("Enter the number of the folder: "))
+        audio_folder = folders[choice-1]
 
-        return audio_file
+        return audio_folder
 
-    def work_in_progress(self):
+    def update_progress_bar(self, current, total, description=''):
+        progress = current / total * 100
+        print(f'{description} Progress: [{current}/{total}] {progress:.2f}%')
+
+    def work_in_progress(self, task):
         print()
-        print("Work in progress...")
+        print(f"{task}...")
 
-    def show_transcript(self, transcript):
+    def work_done(self, task):
         print()
-        print("Transcript generated:")
-        print(transcript)
+        print(f"{task} done!")
 
-    def save_transcript(self, transcript_file):
+    def show_translated_transcript(self, translated_transcript):
         print()
-        print(f"Transcript saved to {transcript_file}")
+        print(f"Translated transcript: {translated_transcript}")
 
-    def get_language(self):
-        # Define a dictionary of language codes and names
-        language_codes = {
-            "fr": "French",
-            "en": "English",
-            "de": "German",
-            "es": "Spanish",
-            "it": "Italian",
-            "pt": "Portuguese"
-        }
-
-        # Print the list of available languages
+    def show_translated_lecture(self, translated_lecture):
         print()
-        print("Select a language to translate the transcript to:")
-        for i, (code, name) in enumerate(language_codes.items()):
-            print(f"{i+1}. {name} ({code})")
+        print(f"Translated lecture: {translated_lecture}")
 
-        # Get the user's choice
-        choice = int(input("Enter the number of the language: "))
-        # Convert the user's choice to a language code
-        language_code = list(language_codes.keys())[choice-1]
-        language_name = language_codes[language_code]
+    def estimated_time_remaining(self, seconds_remaining):
+        m, s = divmod(seconds_remaining, 60)
+        h, m = divmod(m, 60)
+        print(f'Estimated time remaining: {int(h)} hours, {int(m)} minutes, and {int(s)} seconds')
 
-        return language_name
-
-    def show_translated_transcript(self):
-        print()
-        print("Translated transcript saved!")
-
-    def stop_script(self):
-        choice = input("Do you want to stop the script? (y/n): ")
-        if choice.lower() == "y":
-            exit()
-
-    def ask_continue(self):
-        choice = input("Manipulate another audio file? (y/n): ").lower()
-        return choice == "y"
