@@ -99,6 +99,13 @@ class TranscriptionModel:
         """
         if not os.path.isfile(file_path) or not file_path.endswith(self.AUDIO_EXTENSIONS):
             raise ValueError(f"Invalid audio file: {file_path}")
+
+        self.transcript = None
+        self.formatted_transcript = []
+        self.original_audio_file = []
+        self.audio_files = []
+        self.transcript_files = []
+
         self.original_audio_file.append(file_path)
 
         # Check the size of the audio file
@@ -150,6 +157,8 @@ class TranscriptionModel:
         # Make sure that sub audio files will be deleted
         if len(self.audio_files) > 1:
             sub_audio_file = True
+        else:
+            sub_audio_file = False
 
         # Check if a transcript file already exists
         file_path = self.original_audio_file[0]
@@ -169,10 +178,6 @@ class TranscriptionModel:
 
         # Transcribe each audio file
         transcript_texts = []
-
-        # Make sure that sub audio file will be deleted
-        if len(self.audio_files) > 1:
-            sub_audio_file = True
 
         while self.audio_files:
             transcript_text = self.transcribe_audio()
@@ -273,7 +278,6 @@ class TranscriptionModel:
             print("essential points already there")
             with open(essential_points_file, 'r', encoding='utf-8') as f:
                 essential_points_string = f.read()
-            print(essential_points_string)
         else:
             # Load the transcript from the output folder
             audio_file_name = os.path.basename(self.original_audio_file[0])
@@ -291,7 +295,6 @@ class TranscriptionModel:
                 prompt = f"make a small list of the essential points from the following transcript. It will later used for writing a lecture. You must write in {language} and be hyper conscice: '{chunk}'"
                 temperature = 0.8
                 essential_point = self.manipulate_text(prompt, temperature)
-                print(essential_point)
                 essential_points.append(essential_point)
 
             # Join the essential points into a single string
@@ -308,7 +311,6 @@ class TranscriptionModel:
             print("outline already there")
             with open(outline_file, 'r', encoding='utf-8') as f:
                 outline = f.read()
-            print(outline)
         else:
             # Create an outline from the essential points
             prompt = f"Based on the given key points, write only the three main sections title for a lecture with no subsection, no introduction nor conclusion. The outline should be written in {language}: '{essential_points_string}'"
@@ -318,16 +320,22 @@ class TranscriptionModel:
             # Save the essential points
             suffix = f"{language}_outline"
             self.save_text(outline, suffix)
-            print("outline:")
-            print(outline)
 
-        prompt = f"Compose a comprehensive lecture in '{language}', adhering strictly to the structural outline: '{outline}'. Each section must stand independently, with zero repetition, and be distinctly specified using markdown syntax. Your discourse should draw inspiration and factual substantiation from the key points furnished in the list: '{essential_points_string}'. Construct your narrative to convey these points effectively."
-        temperature = 0.8
-        lecture = self.manipulate_text(prompt, temperature)
+        # Check if outline file already exists
+        file_path = self.original_audio_file[0]
+        lecture_file = f"./outputs/{os.path.splitext(os.path.basename(file_path))[0]}_{language}_lecture.txt"
+        if os.path.exists(lecture_file):
+            print("lecture already there")
+            with open(lecture_file, 'r', encoding='utf-8') as f:
+                lecture = f.read()
+        else:
+            prompt = f"Compose a comprehensive lecture in '{language}', adhering strictly to the structural outline: '{outline}'. Each section must stand independently, with zero repetition, and be distinctly specified using markdown syntax. Your discourse should draw inspiration and factual substantiation from the key points furnished in the list: '{essential_points_string}'. Construct your narrative to convey these points effectively."
+            temperature = 0.8
+            lecture = self.manipulate_text(prompt, temperature)
 
-        # Join the lecture parts into a single string and save it as a markdown file
-        suffix = f"{language}_lecture"
-        self.save_text(lecture, suffix)
+            # Join the lecture parts into a single string and save it as a markdown file
+            suffix = f"{language}_lecture"
+            self.save_text(lecture, suffix)
 
         return lecture
 

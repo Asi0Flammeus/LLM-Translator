@@ -50,7 +50,7 @@ class TranscriptionController:
 
     def translate_and_save_transcript(self, transcript, language):
         self.view.work_in_progress(f'Translating transcript to {language}')
-        translation = self.model.translate_to(transcript, 'translation', language)
+        translation = self.model.translate_to(transcript, 'transcript', language)
         self.view.work_done(f'Translating transcript to {language}')
         #self.view.show_translated_transcript(translation)
 
@@ -60,7 +60,7 @@ class TranscriptionController:
         self.view.work_done(f'Creating lecture in {language}')
         for lang in self.translation_languages:
             self.view.work_in_progress(f'Creating lecture in {lang}')
-            translated_lecture = self.model.translate_to(lecture, 'lecture_translated', lang)
+            translated_lecture = self.model.translate_to(lecture, 'lecture', lang)
             self.view.work_done(f'Creating lecture in {lang}')
             #self.view.show_translated_lecture(translated_lecture)
 
