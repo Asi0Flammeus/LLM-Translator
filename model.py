@@ -319,8 +319,8 @@ class TranscriptionModel:
             print("outline:")
             print(outline)
 
-        prompt = f"Write in '{language}' an instructive lecture, composed of several paragraphs based on the following outline:\n'{outline}'\n. Do not repeat yourself. Specify the sections with the markdown syntax. Base your facts and ideas on this list:\n '{essential_points_string}'"
-        temperature = 0.5
+        prompt = f"Compose a comprehensive lecture in '{language}', adhering strictly to the structural outline: '{outline}'. Each section must stand independently, with zero repetition, and be distinctly specified using markdown syntax. Your discourse should draw inspiration and factual substantiation from the key points furnished in the list: '{essential_points_string}'. Construct your narrative to convey these points effectively."
+        temperature = 0.8
         lecture = self.manipulate_text(prompt, temperature)
 
         # Join the lecture parts into a single string and save it as a markdown file
