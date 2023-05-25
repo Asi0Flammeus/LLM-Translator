@@ -25,8 +25,8 @@ class TranscriptionController:
             transcript = self.load_and_transcribe_audio(file_path)
 
             # translate transcript
-            for language in self.translation_languages:
-                self.translate_and_save_transcript(transcript, language)
+            #for language in self.translation_languages:
+            #    self.translate_and_save_transcript(transcript, language)
 
             # create lecture in French and translate it
             self.create_and_translate_lecture('French')
@@ -58,9 +58,9 @@ class TranscriptionController:
         self.view.work_in_progress(f'Creating lecture in {language}')
         lecture = self.model.write_synthetic_lecture(language)
         self.view.work_done(f'Creating lecture in {language}')
-        for lang in self.translation_languages:
-            self.view.work_in_progress(f'Creating lecture in {lang}')
-            translated_lecture = self.model.translate_to(lecture, 'lecture', lang)
-            self.view.work_done(f'Creating lecture in {lang}')
+        #for lang in self.translation_languages:
+        #    self.view.work_in_progress(f'Creating lecture in {lang}')
+        #    translated_lecture = self.model.translate_to(lecture, 'lecture', lang)
+        #    self.view.work_done(f'Creating lecture in {lang}')
             #self.view.show_translated_lecture(translated_lecture)
 

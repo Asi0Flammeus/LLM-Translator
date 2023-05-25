@@ -1,8 +1,8 @@
+import os
 import re
+import requests
 import openai
 import tiktoken
-import requests
-import os
 from pydub import AudioSegment
 
 def num_tokens_from_string(string: str, encoding_name: str) -> int:
@@ -11,7 +11,8 @@ def num_tokens_from_string(string: str, encoding_name: str) -> int:
     num_tokens = len(encoding.encode(string))
     return num_tokens
 
-def split_text_into_chunks(text: str, MAX_TOKENS: int = 1000, ENCODING_NAME: str = "cl100k_base") -> list:
+def split_text_into_chunks(text: str, MAX_TOKENS: int = 1000,
+                        ENCODING_NAME: str = "cl100k_base") -> list:
     """
     Splits the input text into chunks with a maximum token count.
 
@@ -45,13 +46,12 @@ def split_text_into_chunks(text: str, MAX_TOKENS: int = 1000, ENCODING_NAME: str
 class TranscriptionModel:
     """
     This class provides functionality to transcribe audio files using OpenAI's Whisper API
-    and manipulate the resulting transcript using OpenAI's GPT-3.5 API.
+    and manipulate the resulting transcript using OpenAI's GPT API.
     """
 
     # Define constants
-    MODEL_ENGINE = "gpt-3.5-turbo"
     AUDIO_EXTENSIONS = ('.wav', '.mp3', '.m4a', '.webm', '.mp4', '.mpga', '.mpeg')
-    MAX_AUDIO_SIZE_MB = 20  # (a bit smaller than the) Maximum audio size supported by Whisper API in MB
+    MAX_AUDIO_SIZE_MB = 20  # smaller than maximum audio size supported by Whisper API in MB
     openai.api_key = os.getenv("OPENAI_API_KEY")
 
     def __init__(self):
@@ -59,10 +59,9 @@ class TranscriptionModel:
         Initializes the TranscriptionModel instance with the OpenAI API key.
         """
         self.transcript = None
-        self.formatted_transcript = []
         self.original_audio_file = []
         self.audio_files = []
-        self.transcript_files = []
+        self.model_engine = "gpt-3.5-turbo"
 
     def save_text(self, text: str, suffix: str):
         """
@@ -101,10 +100,8 @@ class TranscriptionModel:
             raise ValueError(f"Invalid audio file: {file_path}")
 
         self.transcript = None
-        self.formatted_transcript = []
         self.original_audio_file = []
         self.audio_files = []
-        self.transcript_files = []
 
         self.original_audio_file.append(file_path)
 
@@ -112,8 +109,7 @@ class TranscriptionModel:
         audio_size_mb = os.path.getsize(file_path) / (1024 * 1024)
         if audio_size_mb > self.MAX_AUDIO_SIZE_MB:
             # Split the audio file into chunks of MaximumSizeFile MB
-            chunk_size_ms = self.MAX_AUDIO_SIZE_MB * 1024 * 1024 * 8 // 1000  # Chunk size in milliseconds
-
+            chunk_size_ms = self.MAX_AUDIO_SIZE_MB * 1024 * 1024 * 8 // 1000
             audio = AudioSegment.from_file(file_path)
             duration_ms = len(audio)
             for i in range(0, duration_ms, chunk_size_ms):
@@ -197,7 +193,7 @@ class TranscriptionModel:
 
     def manipulate_text(self, prompt, temperature):
         """
-        Manipulates the transcript text using OpenAI's GPT-3.5 API.
+        Manipulates the transcript text using OpenAI's GPT API.
 
         Args:
             prompt (str, optional): The prompt to use for text manipulation. Defaults to None.
@@ -206,9 +202,9 @@ class TranscriptionModel:
             str: The formatted transcript in text format.
         """
 
-        # Use the OpenAI GPT-3.5 API to manipulate the transcript
+        # Use the OpenAI GPT API to manipulate the transcript
         response = openai.ChatCompletion.create(
-            model = "gpt-3.5-turbo",
+            model = self.model_engine,
             messages=[
                 {"role": "user", "content": prompt}
             ],
@@ -230,14 +226,19 @@ class TranscriptionModel:
             text (str): the text to be translated
             post_suffix (str): The suffix for the name of the output which define the nature of text
             language (str): The language code for the target language (e.g., "en", "de", "es", "it", "fr", "pt").
+
+        Returns:
+            translated_text (str): the translated text in the corresponding language.
         """
 
         # Check if a transcript file already exists
         file_path = self.original_audio_file[0]
-        transcript_file = f"./outputs/{os.path.splitext(os.path.basename(file_path))[0]}_{language}_{post_suffix}.txt"
-        if os.path.exists(transcript_file):
+        text_file = f"./outputs/{os.path.splitext(os.path.basename(file_path))[0]}_{language}_{post_suffix}.txt"
+        if os.path.exists(text_file):
             print("already there")
-            return
+            with open(text_file, 'r', encoding='utf-8') as f:
+                translated_text = f.read()
+            return translated_text
 
         # Split the text into < 1000 token chunks while preserving sentences/paragraphs
         chunks = split_text_into_chunks(text)
@@ -253,15 +254,13 @@ class TranscriptionModel:
         # Merge all translated output into a single string
         translated_text = "\n".join(translated_chunks)
 
-        # Save the result in a txt file
-        suffix = f"{language}_{post_suffix}"
-        self.save_text(translated_text, suffix)
+        return translated_text
 
 
     def write_synthetic_lecture(self, language):
         """
         Writes a synthetic lecture that would be based on the transcript text in a markdown format.
-        Uses the GPT-3.5 API to generate essential points from the transcript, create an outline,
+        Uses the GPT API to generate essential points from the transcript, create an outline,
         and then elaborate the outline into a full lecture.
 
         Args:
