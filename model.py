@@ -1,9 +1,11 @@
 import os
 import re
+import time
 import requests
 import openai
 import tiktoken
 from pydub import AudioSegment
+from openai.error import RateLimitError
 
 def num_tokens_from_string(string: str, encoding_name: str) -> int:
     """Returns the number of tokens in a text string."""
@@ -12,9 +14,9 @@ def num_tokens_from_string(string: str, encoding_name: str) -> int:
     return num_tokens
 
 def split_text_into_chunks(text: str, MAX_TOKENS: int = 1000,
-                        ENCODING_NAME: str = "cl100k_base") -> list:
+                           ENCODING_NAME: str = "cl100k_base") -> list:
     """
-    Splits the input text into chunks with a maximum token count.
+    Splits the input text into chunks with a maximum token count, preserving original layout.
 
     Args:
         text (str): The input text to be split.
@@ -24,19 +26,19 @@ def split_text_into_chunks(text: str, MAX_TOKENS: int = 1000,
     Returns:
         list: The list of chunks.
     """
-    # Split the transcript into < 1000 token chunks while preserving sentences/paragraphs
+    # Split the text into paragraphs while preserving the layout
     chunks = []
-    sentences = re.split(r'\.\s+', text)  # Split the long string into sentences
+    paragraphs = text.splitlines()  # Split the long string into paragraphs
     current_chunk = ""
 
-    for sentence in sentences:
-        sentence_tokens = num_tokens_from_string(sentence, ENCODING_NAME)
+    for paragraph in paragraphs:
+        paragraph_tokens = num_tokens_from_string(paragraph, ENCODING_NAME)
 
-        if sentence_tokens + num_tokens_from_string(current_chunk, ENCODING_NAME) <= MAX_TOKENS:
-            current_chunk += sentence + ". "
+        if paragraph_tokens + num_tokens_from_string(current_chunk, ENCODING_NAME) <= MAX_TOKENS:
+            current_chunk += paragraph + "\n"  # Add line break to preserve layout
         else:
             chunks.append(current_chunk.strip())
-            current_chunk = sentence
+            current_chunk = paragraph
 
     # Add the last remaining chunk
     if current_chunk:
@@ -81,6 +83,29 @@ class TranscriptionModel:
 
         # Use the name of the audio file and the given suffix for the text file
         file_path = os.path.join(output_dir, os.path.splitext(audio_file_name)[0] + f"_{suffix}.txt")
+
+        # Write the formatted transcript text to a file
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(text)
+
+    def save_md(self, text: str, file_path:str, suffix: str):
+        """
+        Save a text to the output folder with a specific suffix.
+
+        Args:
+            text (str): The text to be saved.
+            suffix (str): The suffix to use for the saved text file name.
+        """
+
+        # Get the name of the audio file
+        md_file_name = os.path.basename(file_path)
+
+        # Create the output directory if it does not exist
+        output_dir = os.path.join(os.path.dirname("./"), "outputs")
+        os.makedirs(output_dir, exist_ok=True)
+
+        # Use the name of the audio file and the given suffix for the text file
+        file_path = os.path.join(output_dir, os.path.splitext(md_file_name)[0] + f"_{suffix}.md")
 
         # Write the formatted transcript text to a file
         with open(file_path, "w", encoding="utf-8") as f:
@@ -256,6 +281,54 @@ class TranscriptionModel:
 
         return translated_text
 
+    def simple_translate_to(self, text:str, file_path:str, post_suffix:str, language:str):
+        """
+        Translates any text to the specified language using OpenAI's API.
+
+        Args:
+            text (str): the text to be translated
+            post_suffix (str): The suffix for the name of the output which define the nature of text
+            language (str): The language code for the target language (e.g., "en", "de", "es", "it", "fr", "pt").
+
+        Returns:
+            translated_text (str): the translated text in the corresponding language.
+        """
+
+        # Check if a transcript file already exists
+        text_file = f"./outputs/{os.path.splitext(os.path.basename(file_path))[0]}_{language}.md"
+        if os.path.exists(text_file):
+            print("already there")
+            with open(text_file, 'r', encoding='utf-8') as f:
+                translated_text = f.read()
+            return translated_text
+
+        # Split the text into < 1000 token chunks while preserving sentences/paragraphs
+        chunks = split_text_into_chunks(text)
+
+        # Translate each chunk
+        translated_chunks = []
+        total_chunks = len(chunks)  # Get total number of chunks before starting loop
+        for i, chunk in enumerate(chunks):
+            prompt = f"translate the following text into {language}, ensuring all sentences are accurately translated in the output because it will be used as substitles. Do not translate path links. The output must have the same markdown layouth has the original text:\n '{chunk}'"
+            temperature = 0.2
+
+            while True:
+                try:
+                    translated_chunk = self.manipulate_text(prompt, temperature)
+                    translated_chunks.append(translated_chunk)
+                    print(f'Progress: {(((i+1)/total_chunks)*100).2f}% of chunks translated.')
+
+                    break
+                except RateLimitError as e:
+                    print("Rate limit error occurred. Retrying in 5 seconds...")
+                    time.sleep(5)
+                except Timeout as e:
+                    print("Timeout error occurred. Retrying in 5 seconds...")
+                    time.sleep(5)
+        # Merge all translated output into a single string
+        translated_text = "\n".join(translated_chunks)
+
+        return translated_text
 
     def write_synthetic_lecture(self, language):
         """
@@ -293,7 +366,13 @@ class TranscriptionModel:
             for chunk in chunks:
                 prompt = f"make a small list of the essential points from the following transcript. It will later used for writing a lecture. You must write in {language} and be hyper conscice: '{chunk}'"
                 temperature = 0.8
-                essential_point = self.manipulate_text(prompt, temperature)
+                while True:
+                    try:
+                        essential_point = self.manipulate_text(prompt, temperature)
+                        break
+                    except RateLimitError as e:
+                        print("Rate limit error occurred. Retrying in 5 seconds...")
+                        time.sleep(5)
                 essential_points.append(essential_point)
 
             # Join the essential points into a single string
@@ -314,7 +393,13 @@ class TranscriptionModel:
             # Create an outline from the essential points
             prompt = f"Based on the given key points, write only the three main sections title for a lecture with no subsection, no introduction nor conclusion. The outline should be written in {language}: '{essential_points_string}'"
             temperature = 0.2
-            outline = self.manipulate_text(prompt, temperature)
+            while True:
+                try:
+                    outline = self.manipulate_text(prompt, temperature)
+                    break
+                except RateLimitError as e:
+                    print("Rate limit error occurred. Retrying in 5 seconds...")
+                    time.sleep(5)
 
             # Save the essential points
             suffix = f"{language}_outline"
@@ -330,7 +415,14 @@ class TranscriptionModel:
         else:
             prompt = f"Compose a comprehensive lecture in '{language}', adhering strictly to the structural outline: '{outline}'. Each section must stand independently, with zero repetition, and be distinctly specified using markdown syntax. Your discourse should draw inspiration and factual substantiation from the key points furnished in the list: '{essential_points_string}'. Construct your narrative to convey these points effectively."
             temperature = 0.8
-            lecture = self.manipulate_text(prompt, temperature)
+
+            while True:
+                try:
+                    lecture = self.manipulate_text(prompt, temperature)
+                    break
+                except RateLimitError as e:
+                    print("Rate limit error occurred. Retrying in 5 seconds...")
+                    time.sleep(5)
 
             # Join the lecture parts into a single string and save it as a markdown file
             suffix = f"{language}_lecture"

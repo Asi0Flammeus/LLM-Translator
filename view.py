@@ -18,6 +18,21 @@ class ViewCLI():
 
         return audio_folder
 
+
+    def get_text_folder(self):
+        root_dir = "./text/" # or specify your root directory if different
+        folders = [f.path for f in os.scandir(root_dir) if f.is_dir()]
+
+        print()
+        print("Select a folder to process:")
+        for i, folder in enumerate(folders):
+            print(f"{i+1}. {folder}")
+
+        choice = int(input("Enter the number of the folder: "))
+        text_folder = folders[choice-1]
+
+        return text_folder
+
     def update_progress_bar(self, current, total, description=''):
         progress = current / total * 100
         print(f'{description} Progress: [{current}/{total}] {progress:.2f}%')

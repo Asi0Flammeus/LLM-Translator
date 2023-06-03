@@ -4,5 +4,6 @@ __pycache__/
 .bash_profile
 env/
 audio/
+text/
 outputs/
 playground.py
