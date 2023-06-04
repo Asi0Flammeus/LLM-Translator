@@ -309,14 +309,14 @@ class TranscriptionModel:
         translated_chunks = []
         total_chunks = len(chunks)  # Get total number of chunks before starting loop
         for i, chunk in enumerate(chunks):
-            prompt = f"translate the following text into {language}, ensuring all sentences are accurately translated in the output because it will be used as substitles. Do not translate path links. The output must have the same markdown layouth has the original text:\n '{chunk}'"
+            prompt = f"translate the following text into {language}, ensuring all sentences are accurately translated in the output because it will be used as substitles. Do not translate path links. The output must have the same markdown layout has the original text:\n '{chunk}'"
             temperature = 0.2
 
             while True:
                 try:
                     translated_chunk = self.manipulate_text(prompt, temperature)
                     translated_chunks.append(translated_chunk)
-                    print(f'Progress: {(((i+1)/total_chunks)*100).2f}% of chunks translated.')
+                    print(f'Progress: {(((i+1)/total_chunks)*100):.2f}% of chunks translated.')
 
                     break
                 except RateLimitError as e:
