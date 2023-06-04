@@ -5,7 +5,7 @@ import requests
 import openai
 import tiktoken
 from pydub import AudioSegment
-from openai.error import RateLimitError
+from openai.error import RateLimitError, Timeout, APIError
 
 def num_tokens_from_string(string: str, encoding_name: str) -> int:
     """Returns the number of tokens in a text string."""
@@ -324,6 +324,9 @@ class TranscriptionModel:
                     time.sleep(5)
                 except Timeout as e:
                     print("Timeout error occurred. Retrying in 5 seconds...")
+                    time.sleep(5)
+                except APIError as e:
+                    print("API error occurred. Retrying in 5 seconds...")
                     time.sleep(5)
         # Merge all translated output into a single string
         translated_text = "\n".join(translated_chunks)
