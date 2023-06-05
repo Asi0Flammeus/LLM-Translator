@@ -14,7 +14,7 @@ def num_tokens_from_string(string: str, encoding_name: str) -> int:
     return num_tokens
 
 def split_text_into_chunks(text: str, MAX_TOKENS: int = 1000,
-                           ENCODING_NAME: str = "cl100k_base") -> list:
+        ENCODING_NAME: str = "cl100k_base", transcript: bool = False) -> list:
     """
     Splits the input text into chunks with a maximum token count, preserving original layout.
 
@@ -28,17 +28,26 @@ def split_text_into_chunks(text: str, MAX_TOKENS: int = 1000,
     """
     # Split the text into paragraphs while preserving the layout
     chunks = []
-    paragraphs = text.splitlines()  # Split the long string into paragraphs
     current_chunk = ""
+    if transcript:
+        sentences = re.split(r'\.\s+', text)  # Split the long string into sentences
+        for sentence in sentences:
+            sentence_tokens = num_tokens_from_string(sentence, ENCODING_NAME)
+            if sentence_tokens + num_tokens_from_string(current_chunk, ENCODING_NAME) <= MAX_TOKENS:
+                current_chunk += sentence + ". "
+            else:
+                chunks.append(current_chunk.strip())
+                current_chunk = sentence
+    else:
+        paragraphs = text.splitlines()  # Split the long string into paragraphs
+        for paragraph in paragraphs:
+            paragraph_tokens = num_tokens_from_string(paragraph, ENCODING_NAME)
 
-    for paragraph in paragraphs:
-        paragraph_tokens = num_tokens_from_string(paragraph, ENCODING_NAME)
-
-        if paragraph_tokens + num_tokens_from_string(current_chunk, ENCODING_NAME) <= MAX_TOKENS:
-            current_chunk += paragraph + "\n"  # Add line break to preserve layout
-        else:
-            chunks.append(current_chunk.strip())
-            current_chunk = paragraph
+            if paragraph_tokens + num_tokens_from_string(current_chunk, ENCODING_NAME) <= MAX_TOKENS:
+                current_chunk += paragraph + "\n"  # Add line break to preserve layout
+            else:
+                chunks.append(current_chunk.strip())
+                current_chunk = paragraph
 
     # Add the last remaining chunk
     if current_chunk:
@@ -303,14 +312,14 @@ class TranscriptionModel:
             return translated_text
 
         # Split the text into < 1000 token chunks while preserving sentences/paragraphs
-        chunks = split_text_into_chunks(text)
+        chunks = split_text_into_chunks(text, MAX_TOKENS=750)
 
         # Translate each chunk
         translated_chunks = []
         total_chunks = len(chunks)  # Get total number of chunks before starting loop
         for i, chunk in enumerate(chunks):
-            prompt = f"translate the following text into {language}, ensuring all sentences are accurately translated in the output because it will be used as substitles. Do not translate path links. The output must have the same markdown layout has the original text:\n '{chunk}'"
-            temperature = 0.2
+            prompt = f"translate the following text into {language}. Do not translate path links. The output must have the same markdown layout has the original text:\n '{chunk}'"
+            temperature = 0.1
 
             while True:
                 try:
@@ -362,7 +371,7 @@ class TranscriptionModel:
                 input_transcript = f.read()
 
             # Create multiple chunks of the transcript
-            chunks = split_text_into_chunks(input_transcript)
+            chunks = split_text_into_chunks(input_transcript, transcript=True)
 
             # Extract essential points from each chunk
             essential_points = []
