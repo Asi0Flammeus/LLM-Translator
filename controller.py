@@ -11,14 +11,16 @@ class TranscriptionController:
         self.code_languages = ["en",  "de", "es", "it", "pt"]
 
     def run(self):
-        choice = input("Enter 1 to transcribe audio or 2 to translate text: ")
+        choice = input("Enter 1 to transcribe audio files, 2 to translate texts or 3 to make a lecture of audio files: ")
 
         if choice == "1":
             self.transcribing_a_folder_full_of_audio_file()
         elif choice == "2":
             self.translate_a_folder_full_of_text_files()
+        elif choice == "3":
+            self.make_lecture_of_audio_files()
         else:
-            print("Invalid choice. Please enter either 1 or 2.")
+            print("Invalid choice. Please enter either 1, 2 or 3.")
 
 
     def translate_a_folder_full_of_text_files(self):
@@ -55,6 +57,21 @@ class TranscriptionController:
                 idx += 1
 
     def transcribing_a_folder_full_of_audio_file(self):
+        # ask which folder to process
+        audio_folder = self.view.get_audio_folder()
+        mp3_files = [f for f in os.listdir(audio_folder) if f.endswith(".mp3")]
+        total_files = len(mp3_files)
+        processing_times = []
+
+        for idx, mp3_file in enumerate(mp3_files):
+            start_time = time.time()
+            self.view.update_progress_bar(idx+1, total_files, 'Files')
+            file_path = os.path.join(audio_folder, mp3_file)
+
+            # transcribe audio
+            transcript = self.load_and_transcribe_audio(file_path)
+
+    def make_lecture_of_audio_files(self):
         # ask which folder to process
         audio_folder = self.view.get_audio_folder()
         mp3_files = [f for f in os.listdir(audio_folder) if f.endswith(".mp3")]
