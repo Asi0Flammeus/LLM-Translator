@@ -5,6 +5,7 @@ import requests
 import openai
 import tiktoken
 from pydub import AudioSegment
+from dotenv import load_dotenv
 from openai.error import RateLimitError, Timeout, APIError
 
 def num_tokens_from_string(string: str, encoding_name: str) -> int:
@@ -63,6 +64,10 @@ class TranscriptionModel:
     # Define constants
     AUDIO_EXTENSIONS = ('.wav', '.mp3', '.m4a', '.webm', '.mp4', '.mpga', '.mpeg')
     MAX_AUDIO_SIZE_MB = 20  # smaller than maximum audio size supported by Whisper API in MB
+
+    # Load environment variables from .env file
+    load_dotenv()
+    # Set OpenAI key from environment variable
     openai.api_key = os.getenv("OPENAI_API_KEY")
 
     def __init__(self):
