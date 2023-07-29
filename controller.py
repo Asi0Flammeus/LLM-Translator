@@ -8,8 +8,8 @@ class Controller():
         self.view = ViewCLI()
         self.model = None
 
-        self.translation_languages = ["English",  "German", "Spanish", "Italian", "Portuguese"]
-        self.code_languages = ["en",  "de", "es", "it", "pt"]
+        self.translation_languages = ["English",  "German", "Spanish", "Italian", "Portuguese", "French"]
+        self.code_languages = ["en",  "de", "es", "it", "pt", "fr"]
 
         self.extension = 'md'
         self.folder_to_translate_path = self.view.get_folder_to_translate_path()
