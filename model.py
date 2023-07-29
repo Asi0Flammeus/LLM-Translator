@@ -82,12 +82,44 @@ class OpenaiTranslationModel:
 
         return translated_text
 
+    def get_translated_text_in(self, language):
+        self.update_prompt_to(language)
+        translated_chunks = []
+        NUM_CHUNKS = len(self.text_to_translate.chunks)
+        for i, chunk in enumerate(self.text_to_translate.chunks):
+            translated_chunk = self.translate_a_single(chunk)
+            translated_chunks.append(translated_chunk)
+            print(f'Progress: {(((i+1)/NUM_CHUNKS)*100):.2f}% of chunks translated.')
+        translated_text = "\n".join(translated_chunks)
+        return translated_text
+
 
     def update_prompt_to(self, language):
 
         self.prompt = (f"translate the following text into {language}.\
                         Do not translate path links. \
                         The output must have the same markdown layout has the original text:\n")
+
+
+    def translate_a_single(self, chunk):
+        try:
+            current_prompt = self.prompt + chunk
+            return self.get_response_from_OpenAI_API_with(current_prompt)
+        except (RateLimitError, Timeout, APIError) as e:
+            self.handle_api_error(e)
+            return self.translate_a_single(chunk)
+
+
+    def handle_api_error(self, error):
+        if isinstance(error, RateLimitError):
+            print("Rate limit error occurred. Retrying in 5 seconds...")
+        elif isinstance(error, Timeout):
+            print("Timeout error occurred. Retrying in 5 seconds...")
+        elif isinstance(error, APIError):
+            print("API error occurred. Retrying in 5 seconds...")
+        else:
+            print(f"An unexpected error {error} occurred. Retrying in 5 seconds...")
+        time.sleep(5)
 
 
     def get_response_from_OpenAI_API_with(self, current_prompt):
