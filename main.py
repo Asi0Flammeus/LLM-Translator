@@ -1,10 +1,14 @@
-from controller import TranscriptionController
+from controller import Controller
+from view import ViewCLI
 
 def main():
-    # Create a new controller instance
-    controller = TranscriptionController()
-    controller.run()
+    view = ViewCLI()
+    while True:
+        controller = Controller()
+        controller.translate_the_folder()
+
+        if view.user_request_stop():
+            break
 
 if __name__ == "__main__":
     main()
-

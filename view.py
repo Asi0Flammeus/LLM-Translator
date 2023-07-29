@@ -1,8 +1,8 @@
 import os
 
 class ViewCLI():
-    def __init__(self, controller):
-        self.controller = controller
+    def __init__(self):
+        pass
 
     def get_audio_folder(self):
         root_dir = "./audio/" # or specify your root directory if different
@@ -19,23 +19,23 @@ class ViewCLI():
         return audio_folder
 
 
-    def get_text_folder(self):
-        root_dir = "./text/" # or specify your root directory if different
+    def get_folder_to_translate_path(self):
+        root_dir = "./text/"
         folders = [f.path for f in os.scandir(root_dir) if f.is_dir()]
 
         print()
-        print("Select a folder to process:")
+        print("Select a folder to translate:")
         for i, folder in enumerate(folders):
             print(f"{i+1}. {folder}")
 
         choice = int(input("Enter the number of the folder: "))
-        text_folder = folders[choice-1]
+        folder_path = folders[choice-1]
 
-        return text_folder
+        return folder_path
 
-    def update_progress_bar(self, current, total, description=''):
+    def update_progress_bar(self, current, total):
         progress = current / total * 100
-        print(f'{description} Progress: [{current}/{total}] {progress:.2f}%')
+        print(f'Translations in Progress: [{current}/{total}] {progress:.2f}%')
 
     def work_in_progress(self, task):
         print()
@@ -53,8 +53,11 @@ class ViewCLI():
         print()
         print(f"Translated lecture: {translated_lecture}")
 
-    def estimated_time_remaining(self, seconds_remaining):
+    def estimated_remaining_time(self, seconds_remaining):
         m, s = divmod(seconds_remaining, 60)
         h, m = divmod(m, 60)
         print(f'Estimated time remaining: {int(h)} hours, {int(m)} minutes, and {int(s)} seconds')
 
+    def user_request_stop(self):
+        response = input("Do you want another batch translation? (y/n): ")
+        return response.lower() == "n"
