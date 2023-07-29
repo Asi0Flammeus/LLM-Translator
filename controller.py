@@ -11,9 +11,9 @@ class Controller():
         self.translation_languages = ["English",  "German", "Spanish", "Italian", "Portuguese", "French"]
         self.code_languages = ["en",  "de", "es", "it", "pt", "fr"]
 
-        self.extension = 'md'
+        self.extensions = ['md', 'txt']
         self.folder_to_translate_path = self.view.get_folder_to_translate_path()
-        self.text_to_translate_names = [f for f in os.listdir(self.folder_to_translate_path) if (f.endswith(".md"))]
+        self.text_to_translate_names = [f for f in os.listdir(self.folder_to_translate_path) if any(f.endswith(ext) for ext in self.extensions)]
 
         self.text_to_translate_path = ""
         self.text_to_translate = ""
@@ -68,9 +68,7 @@ class Controller():
 
 
     def get_file_extension(self):
-        # I would like something that check for either ".txt" or "md" extension
-        # but for now it is just hardcoded
-        return self.extension
+        return os.path.splitext(self.text_to_translate_path)[1][1:]
 
 
     def check_existence_of_translated_text(self):
