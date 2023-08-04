@@ -17,22 +17,23 @@ LLM-Translator has been successfully tested on Ubuntu 20.04, with planned compat
 To install and configure the project, follow these steps:
 
 1. **Clone the Repository**:
-   `git clone https://github.com/Asi0Flammeus/LLM-Translator.git`
+   - `git clone https://github.com/Asi0Flammeus/LLM-Translator.git`
 2. **Navigate to the Directory**:
-   `cd LLM-Translator/`
+   - `cd LLM-Translator/`
 3. **Create a `.env` File with OpenAI API Key**:
-   `vim .env`
-   Add the line: `OPENAI_API_KEY="YOUR_API_KEY"`
+   - `vim .env`
+   - Add the line:
+      - `OPENAI_API_KEY="YOUR_API_KEY"`
 4. **Install Required Libraries**:
-   `pip install -r requirements.txt`
+   - `pip install -r requirements.txt`
 5. **Create an Input Folder for Texts**:
-   `mkdir text/`
+   - `mkdir text/`
 6. **Place Text Files to Translate in the Input Folder**:
-   (`.txt` and `.md` files must be within a subfolder in `LLM-Translator/text/`)
+   - (`.txt` and `.md` files must be within a subfolder in `LLM-Translator/text/`)
 7. **Execute the Program**:
-   `python main.py`
+   - `python3 main.py`
 8. **Follow On-screen Instructions**:
-   Select folders to translate in English, German, Italian, Spanish, French, and Portuguese.
+   - Select folders to translate in English, German, Italian, Spanish, French, and Portuguese.
 
 **Note**: Translations will be stored in the `outputs` folder.
 
