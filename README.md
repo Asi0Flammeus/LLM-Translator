@@ -50,7 +50,9 @@ To install and configure the project, follow these steps:
 
 Contributions are welcome. To contribute, please fork the repository and create a pull request with your changes. Ensure that changes are tested and existing functionality is maintained.
 
-Tips are accepted via LN through this [link](https://getalby.com/p/asi0).
+Here we promote [*Value for Value*](https://dergigi.com/2021/12/30/the-freedom-of-value/) model so tips are accepted via LN through this [link](https://getalby.com/p/asi0) or by scanning directly this QR code with a Lightning wallet 👇. 
+
+<img src="./figure/LN-address-asi0-tip.png" width="175">
 
 ## License
 
