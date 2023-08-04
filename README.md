@@ -1,37 +1,56 @@
-# LLM-Translator 
+# LLM-Translator
 
-This project provides functionality for transcribing audio files using OpenAI's Whisper API and manipulating the resulting transcript using OpenAI's GPT-3.5 API. The project can also translate the transcript into different languages using GPT-3.5.
+LLM-Translator is a comprehensive tool designed to transcribe audio files utilizing OpenAI's Whisper API and subsequently manipulate the generated transcript through OpenAI's GPT-3.5 API. Additionally, the project offers the capability to translate the transcript into various languages utilizing GPT-3.5.
 
-## Requirements
+## Prerequisites
 
-Before using the project, you must have the following installed:
+Before utilizing this tool, ensure the installation of:
 
 - Python 3.7 or higher
-- The OpenAI Python library (`openai`) - you can install this library using pip: `pip install openai`
-- An OpenAI API key - you can obtain an API key from the OpenAI website: https://beta.openai.com/docs/api-reference/introduction
+- OpenAI Python library (`openai`)
+- An OpenAI [API key](https://beta.openai.com/docs/api-reference/introduction).
 
-## Usage
+## Installation and Configuration
 
-To use the project, follow these steps:
+LLM-Translator has been successfully tested on Ubuntu 20.04, with planned compatibility for MacOS and Windows.
 
-1. Clone or download the project code to your local machine.
-2. Set your OpenAI API key as an environment variable with the name `OPENAI_API_KEY`.
-3. Install the `openai` library using pip: `pip install openai`.
-4. Navigate to the project directory in your terminal or command prompt.
-5. Run the `view.py` file using Python: `python view.py`.
-6. Follow the prompts to choose an audio file, transcribe the audio, save the transcript to a file, and translate the transcript to a chosen language.
+To install and configure the project, follow these steps:
 
-Note: The audio files should be located in the `audio` folder of the project directory. The transcripts and translations will be saved to the `outputs` folder.
+1. **Clone the Repository**:
+   `git clone https://github.com/Asi0Flammeus/LLM-Translator.git`
+2. **Navigate to the Directory**:
+   `cd LLM-Translator/`
+3. **Create a `.env` File with OpenAI API Key**:
+   `vim .env`
+   Add the line: `OPENAI_API_KEY="YOUR_API_KEY"`
+4. **Install Required Libraries**:
+   `pip install -r requirements.txt`
+5. **Create an Input Folder for Texts**:
+   `mkdir text/`
+6. **Place Text Files to Translate in the Input Folder**:
+   (`.txt` and `.md` files must be within a subfolder in `LLM-Translator/text/`)
+7. **Execute the Program**:
+   `python main.py`
+8. **Follow On-screen Instructions**:
+   Select folders to translate in English, German, Italian, Spanish, French, and Portuguese.
+
+**Note**: Translations will be stored in the `outputs` folder.
+
+## Roadmap
+
+- [ ] Comprehensive Testing and Continuous Integration
+- [ ] Improved Output Organization
+- [ ] Enhanced Language Selection and Translation Features
+- [ ] Integration with ChatGPT-4 Model
+- [ ] Development of a User-Friendly GUI
+- [ ] Integration with Additional LLM Models
 
 ## Contributing
 
-If you would like to contribute to the project, please fork the repository and create a pull request with your changes. Before submitting a pull request, make sure to test your changes and ensure that they do not break any existing functionality.
+Contributions are welcome. To contribute, please fork the repository and create a pull request with your changes. Ensure that changes are tested and existing functionality is maintained.
 
-
-You can tip me via LN through this [link](https://getalby.com/p/asi0).
+Tips are accepted via LN through this [link](https://getalby.com/p/asi0).
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE file](./license.md) for details.
-
-
+This project is governed by the MIT License. For more information, refer to the [LICENSE file](./license.md).
