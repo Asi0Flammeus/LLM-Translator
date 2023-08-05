@@ -5,12 +5,18 @@ import time
 
 class Controller():
     def __init__(self):
-        self.view = ViewCLI()
-        self.model = None
-
-        self.translation_languages = ["English",  "German", "Spanish", "Italian", "Portuguese", "French"]
-        self.code_languages = ["en",  "de", "es", "it", "pt", "fr"]
-        self.code_languages = self.view.get_selected_code_language()
+        self.supported_languages_codes = {
+            "English": "en",
+            "German": "de",
+            "Spanish": "es",
+            "Italian": "it",
+            "Portuguese": "pt",
+            "French": "fr"
+        }
+        self.supported_languages = list(self.supported_languages_codes.keys())
+        self.code_languages = list(self.supported_languages_codes.values())
+        self.view = ViewCLI(self.supported_languages)
+        self.translation_languages = self.view.get_languages()
 
         self.extensions = ['md', 'txt']
         self.folder_to_translate_path = self.view.get_folder_to_translate_path()
@@ -27,6 +33,7 @@ class Controller():
         self.processing_times = []
         self.index = 0
 
+        self.model = None # A model is instanciated for each translated text
 
     def translate_the_folder(self):
 

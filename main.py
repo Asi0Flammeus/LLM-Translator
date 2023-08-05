@@ -2,7 +2,7 @@ from controller import Controller
 from view import ViewCLI
 
 def main():
-    view = ViewCLI()
+    view = ViewCLI([])
     while True:
         controller = Controller()
         controller.translate_the_folder()
