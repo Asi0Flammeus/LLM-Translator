@@ -10,6 +10,7 @@ class Controller():
 
         self.translation_languages = ["English",  "German", "Spanish", "Italian", "Portuguese", "French"]
         self.code_languages = ["en",  "de", "es", "it", "pt", "fr"]
+        self.code_languages = self.view.get_selected_code_language()
 
         self.extensions = ['md', 'txt']
         self.folder_to_translate_path = self.view.get_folder_to_translate_path()

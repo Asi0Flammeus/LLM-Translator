@@ -4,21 +4,6 @@ class ViewCLI():
     def __init__(self):
         pass
 
-    def get_audio_folder(self):
-        root_dir = "./audio/" # or specify your root directory if different
-        folders = [f.path for f in os.scandir(root_dir) if f.is_dir()]
-
-        print()
-        print("Select a folder to process:")
-        for i, folder in enumerate(folders):
-            print(f"{i+1}. {folder}")
-
-        choice = int(input("Enter the number of the folder: "))
-        audio_folder = folders[choice-1]
-
-        return audio_folder
-
-
     def get_folder_to_translate_path(self):
         root_dir = "./text/"
         folders = [f.path for f in os.scandir(root_dir) if f.is_dir()]
