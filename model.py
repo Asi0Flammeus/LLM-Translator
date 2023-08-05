@@ -21,33 +21,6 @@ class OpenaiTranslationModel:
         self.temperature = 0.1
 
     def get_translated_text_in(self, language):
-
-        self.update_prompt_to(language)
-        translated_chunks = []
-        NUM_CHUNKS = len(self.text_to_translate.chunks)
-        for i, chunk in enumerate(self.text_to_translate.chunks):
-            while True:
-                try:
-                    current_prompt = self.prompt + chunk
-                    translated_chunk = self.get_response_from_OpenAI_API_with(current_prompt)
-                    translated_chunks.append(translated_chunk)
-                    print(f'Progress: {(((i+1)/NUM_CHUNKS)*100):.2f}% of chunks translated.')
-                    break
-                except RateLimitError as e:
-                    print("Rate limit error occurred. Retrying in 5 seconds...")
-                    time.sleep(5)
-                except Timeout as e:
-                    print("Timeout error occurred. Retrying in 5 seconds...")
-                    time.sleep(5)
-                except APIError as e:
-                    print("API error occurred. Retrying in 5 seconds...")
-                    time.sleep(5)
-
-        translated_text = "\n".join(translated_chunks)
-
-        return translated_text
-
-    def get_translated_text_in(self, language):
         self.update_prompt_to(language)
         translated_chunks = []
         NUM_CHUNKS = len(self.text_to_translate.chunks)
