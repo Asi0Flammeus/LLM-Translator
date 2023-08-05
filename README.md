@@ -21,11 +21,15 @@ To install and configure the project, follow these steps:
 2. **Navigate to the Directory**:
    - `cd LLM-Translator/`
 3. **Create a `.env` File with OpenAI API Key**:
-   - `vim .env`
+   - `nano .env`
    - Add the line:
       - `OPENAI_API_KEY="YOUR_API_KEY"`
+4. Create a python env
+   - `python3 -m venv env`
+5. Activate the environnement.
+   - `source env/bin/activate`
 4. **Install Required Libraries**:
-   - `pip install -r requirements.txt`
+   - `pip3 install -r requirements.txt`
 5. **Create an Input Folder for Texts**:
    - `mkdir text/`
 6. **Place Text Files to Translate in the Input Folder**:
@@ -35,7 +39,7 @@ To install and configure the project, follow these steps:
 8. **Follow On-screen Instructions**:
    - Select folders to translate in English, German, Italian, Spanish, French, and Portuguese.
 
-**Note**: Translations will be stored in the `outputs` folder.
+**Note**: Translations will be stored in the `outputs` folder. Always assure yourself that the python environnement is activated before executing the script.
 
 ## Roadmap
 
