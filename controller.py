@@ -20,6 +20,7 @@ class Controller():
 
         self.extensions = ['md', 'txt']
         self.folder_to_translate_path = self.view.get_folder_to_translate_path()
+        self.input_subfolder_name = os.path.basename(self.folder_to_translate_path)
         self.text_to_translate_names = [f for f in os.listdir(self.folder_to_translate_path) if any(f.endswith(ext) for ext in self.extensions)]
 
         self.text_to_translate_path = ""
@@ -61,7 +62,6 @@ class Controller():
 
             self.create_translated_text_path_for(language)
             if not self.check_existence_of_translated_text():
-                ## it appears that the translation is not done
                 self.translated_text = self.model.get_translated_text_in(language)
                 self.save_translated_text()
 
@@ -69,30 +69,24 @@ class Controller():
             self.update_processing_times()
             self.estimate_remaining_time()
 
-
     def create_translated_text_path_for(self, language):
         extension = self.get_file_extension()
-        self.translated_text_path = f"./outputs/{os.path.splitext(os.path.basename(self.text_to_translate_path))[0]}_{language}.{extension}"
-
+        self.translated_text_path = f"./outputs/{self.input_subfolder_name}/{os.path.splitext(os.path.basename(self.text_to_translate_path))[0]}_{language}.{extension}"
 
     def get_file_extension(self):
         return os.path.splitext(self.text_to_translate_path)[1][1:]
 
-
     def check_existence_of_translated_text(self):
         return os.path.exists(self.translated_text_path)
-
 
     def save_translated_text(self):
         self.create_destination_if_needed()
         with open(self.translated_text_path, "w", encoding="utf-8") as f:
             f.write(self.translated_text)
 
-
     def create_destination_if_needed(self):
-        destination = os.path.join(os.path.dirname("./"), "outputs")
+        destination = f"./outputs/{self.input_subfolder_name}"
         os.makedirs(destination, exist_ok=True)
-
 
     def update_processing_times(self):
         end_time = time.time()
