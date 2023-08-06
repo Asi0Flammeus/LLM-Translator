@@ -45,17 +45,6 @@ class OpenaiTranslationModel:
             self.error_handler.handle_error(e)
             return self.translate_a_single(chunk)
 
-    def handle_api_error(self, error):
-        if isinstance(error, RateLimitError):
-            print("Rate limit error occurred. Retrying in 5 seconds...")
-        elif isinstance(error, Timeout):
-            print("Timeout error occurred. Retrying in 5 seconds...")
-        elif isinstance(error, APIError):
-            print("API error occurred. Retrying in 5 seconds...")
-        else:
-            print(f"An unexpected error {error} occurred. Retrying in 5 seconds...")
-        time.sleep(5)
-
     def get_response_from_OpenAI_API_with(self, current_prompt):
         response = openai.ChatCompletion.create(
             model = self.model_engine,
@@ -78,16 +67,15 @@ class TextToTranslate():
         self.create_chunks()
 
     def create_chunks(self):
-        current_chunk = ""
         paragraphs = self.text_to_translate.splitlines()
         for paragraph in paragraphs:
             if self.can_add_another(paragraph):
-                current_chunk += paragraph + "\n"
+                self.current_chunk += paragraph + "\n"
             else:
-                self.chunks.append(current_chunk.strip())
-                current_chunk = paragraph
-        if current_chunk:
-           self.chunks.append(current_chunk.strip())
+                self.chunks.append(self.current_chunk.strip())
+                self.current_chunk = paragraph
+        if self.current_chunk:
+           self.chunks.append(self.current_chunk.strip())
 
     def can_add_another(self, paragraph):
         CHUNK_TOKENS = self.count_the_token_length_of(self.current_chunk)
