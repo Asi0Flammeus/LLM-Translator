@@ -37,8 +37,12 @@ LLM-Translator has been successfully tested on Ubuntu 20.04, with planned compat
 
 ## Usage
 
+0. **Make sure that your repo is up to date:** 
+   - `git pull` 
+
 1. **If not already activated, activate the Python Environment**:  
    - `source env/bin/activate`
+   - `deactivate` to deactivate the env
 
 2. **Prepare Input Files**:  
    - Create subfolders inside the `/inputs/` directory and populate them with `.txt` and `.md` files you wish to translate. 
