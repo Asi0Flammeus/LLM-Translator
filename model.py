@@ -93,15 +93,14 @@ class APIErrorHandler:
         self.error_handlers = {
             RateLimitError: "Rate limit",
             Timeout: "Timeout",
-            APIError: "API error",
+            APIError: "API",
             ServiceUnavailableError: "Service Unavailable",
         }
         self.sleep_time = 5
 
     def handle_error(self, error):
         error_type = type(error)
-        handler = self.error_handlers.get(error_type, f"An unknown error {error} occurred.")
-        error_message = handler()
+        error_message = self.error_handlers.get(error_type, f"{error}")
         print(f"An {error_message} error occured. Retry in {self.sleep_time} seconds...")
         time.sleep(self.sleep_time)
 
