@@ -78,6 +78,18 @@ class SupportedLanguages:
                 "Références Culturelles: Si des références culturelles ou contextuelles ne se traduisent pas bien directement, paraphrasez pour conserver le sens prévu ou fournissez une brève explication.\n"
                 "---\n"
                 "Texte Original:\n"
+            ),
+
+            Language(
+                "Swedish", "sv",
+                "Översätt det Tekniska Innehållet till Svenska\n"
+                "Ursprungsspråk: {self.origin_language}\n"
+                "Innehållets Karaktär: Materialet är av teknisk art och kan innehålla branschspecifika termer.\n"
+                "Länkar & Tekniska Ord: Översätt inte länkstigar och högspecifika tekniska ord. Vid tvekan, behåll den ursprungliga termen.\n"
+                "Formatering: Se till att utfallet behåller samma markdown-layout och formatering som den ursprungliga texten. Konsekvens är av yttersta vikt.\n"
+                "Kulturella Referenser: Om det finns kulturella eller sammanhangsspecifika referenser som inte direkt översätts väl, omformulera för att behålla den avsedda meningen eller ge en kort förklaring.\n"
+                "---\n"
+                "Originaltext:\n"
             )]
 
 
