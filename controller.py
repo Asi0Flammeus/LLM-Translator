@@ -1,23 +1,20 @@
 from model import OpenaiTranslationModel
+from languages import SupportedLanguages
 from view import ViewCLI
 import os
 import time
 
 class Controller():
     def __init__(self):
-        self.supported_languages_codes = {
-            "English": "en",
-            "German": "de",
-            "Spanish": "es",
-            "Italian": "it",
-            "Portuguese": "pt",
-            "French": "fr"
-        }
-        self.supported_languages = list(self.supported_languages_codes.keys())
-        self.code_languages = list(self.supported_languages_codes.values())
+        self.supported_languages_instance = SupportedLanguages()
+
+        self.supported_languages = [language.name for language in self.supported_languages_instance.languages]
+        self.code_languages = [language.code for language in self.supported_languages_instance.languages]
+
         self.view = ViewCLI(self.supported_languages)
         self.translation_languages = self.view.get_languages()
         self.origin_language = self.view.get_origin_language()
+        self.supported_languages_instance.set_origin_language_to(self.origin_language)
 
         self.extensions = ['md', 'txt']
         self.folder_to_translate_path = self.view.get_folder_to_translate_path()
@@ -52,7 +49,7 @@ class Controller():
 
 
     def load_translation_model(self):
-        self.model = OpenaiTranslationModel(self.text_to_translate)
+        self.model = OpenaiTranslationModel(self.text_to_translate, self.supported_languages_instance)
 
 
     def batch_translate_the_text(self):
