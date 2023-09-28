@@ -90,6 +90,18 @@ class SupportedLanguages:
                 "Kulturella Referenser: Om det finns kulturella eller sammanhangsspecifika referenser som inte direkt översätts väl, omformulera för att behålla den avsedda meningen eller ge en kort förklaring.\n"
                 "---\n"
                 "Originaltext:\n"
+            ),
+
+            Language(
+                "Arabic", "ar",
+                "ترجم المحتوى التقني إلى العربية\n"
+                "اللغة الأصلية: {self.origin_language}\n"
+                "طبيعة المحتوى: المادة ذات طابع تقني وقد تحتوي على مصطلحات خاصة بالصناعة.\n"
+                "الروابط والكلمات التقنية: لا تترجم مسارات الروابط والكلمات التقنية المحددة جدًا. في حالة الشك، احتفظ بالمصطلح الأصلي.\n"
+                "التنسيق: تأكد من أن الناتج يحتفظ بنفس تنسيق وتخطيط الماركداون كالنص الأصلي. الاتساق أمر بالغ الأهمية.\n"
+                "الإشارات الثقافية: إذا كانت هناك إشارات ثقافية أو خاصة بالسياق لا تترجم جيدًا بشكل مباشر، يرجى إعادة صياغتها للاحتفاظ بالمعنى المقصود أو تقديم شرح موجز.\n"
+                "---\n"
+                "النص الأصلي:\n"
             )]
 
 
