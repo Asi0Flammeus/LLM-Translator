@@ -19,6 +19,26 @@ class ViewCLI():
         selected_languages = [self.supported_languages[int(choice)-1] for choice in choices]
         return selected_languages
 
+    def get_origin_language(self):
+        print()
+        print("Select the original language of the text:")
+        for i, language in enumerate(self.supported_languages):
+            print(f"{i+1}. {language}")
+
+        while True:
+            choice_input = input("Enter the number of the origin language: ")
+            if self.validate_language(choice_input) and ',' not in choice_input: # Ensure only one choice
+                choice = int(choice_input)
+                break
+
+        origin_language = self.supported_languages[choice-1]
+        return origin_language
+
+    def validate_origin_language(self, choice_input):
+        valid_indices = [str(i) for i in range(1, len(self.supported_languages) + 1)]
+        choices = choice_input.split(",")
+        return all(choice.strip() in valid_indices for choice in choices)
+
     def validate_language(self, choices_input):
         try:
             choices = [int(choice) for choice in choices_input.split(",")]

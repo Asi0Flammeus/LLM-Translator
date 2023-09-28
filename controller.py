@@ -17,6 +17,7 @@ class Controller():
         self.code_languages = list(self.supported_languages_codes.values())
         self.view = ViewCLI(self.supported_languages)
         self.translation_languages = self.view.get_languages()
+        self.origin_language = self.view.get_origin_language()
 
         self.extensions = ['md', 'txt']
         self.folder_to_translate_path = self.view.get_folder_to_translate_path()
@@ -55,23 +56,23 @@ class Controller():
 
 
     def batch_translate_the_text(self):
-        for language in self.translation_languages:
+        for destination_language in self.translation_languages:
 
             self.view.update_progress_bar(self.index, self.NUM_TRANSLATIONS)
-            self.view.work_in_progress(f'Translating in {language}')
+            self.view.work_in_progress(f'Translating in {destination_language}')
 
-            self.create_translated_text_path_for(language)
+            self.create_translated_text_path_for(destination_language)
             if not self.check_existence_of_translated_text():
-                self.translated_text = self.model.get_translated_text_in(language)
+                self.translated_text = self.model.get_translated_text_from_to(self.origin_language, destination_language)
                 self.save_translated_text()
 
-            self.view.work_done(f'Translating in {language}')
+            self.view.work_done(f'Translating in {destination_language}')
             self.update_processing_times()
             self.estimate_remaining_time()
 
-    def create_translated_text_path_for(self, language):
+    def create_translated_text_path_for(self, destination_language):
         extension = self.get_file_extension()
-        self.translated_text_path = f"./outputs/{self.input_subfolder_name}/{os.path.splitext(os.path.basename(self.text_to_translate_path))[0]}_{language}.{extension}"
+        self.translated_text_path = f"./outputs/{self.input_subfolder_name}/{os.path.splitext(os.path.basename(self.text_to_translate_path))[0]}_{destination_language}.{extension}"
 
     def get_file_extension(self):
         return os.path.splitext(self.text_to_translate_path)[1][1:]

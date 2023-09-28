@@ -20,8 +20,8 @@ class OpenaiTranslationModel:
         self.prompt = ""
         self.temperature = 0.1
 
-    def get_translated_text_in(self, language):
-        self.update_prompt_to(language)
+    def get_translated_text_from_to(self, origin_language, destination_language):
+        self.update_prompt_for_origin_and_destination(origin_language, destination_language)
         translated_chunks = []
         NUM_CHUNKS = len(self.text_to_translate.chunks)
         for i, chunk in enumerate(self.text_to_translate.chunks):
@@ -31,9 +31,9 @@ class OpenaiTranslationModel:
         translated_text = "\n".join(translated_chunks)
         return translated_text
 
-    def update_prompt_to(self, language):
+    def update_prompt_for_origin_and_destination(self, origin_language, destination_language):
 
-        self.prompt = (f"translate the following text into {language}.\
+        self.prompt = (f"translate in {destination_language} the following text written in {origin_language}.\
                         Do not translate path links. \
                         The output must have the same markdown layout has the original text:\n")
 
