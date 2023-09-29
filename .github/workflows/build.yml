@@ -2,12 +2,11 @@ name: Build and Release
 
 on:
   push:
-    tags:
-      - '*'
-
+    branches:
+        - main
 jobs:
   build-linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
     - name: Checkout code
