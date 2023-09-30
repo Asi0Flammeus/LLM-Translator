@@ -45,7 +45,7 @@ LLM-Translator has been successfully tested on Windows 11.
 
 By default, Python 3 and git are not already installed on Windows so I will also explain how to install them. If you already have those installed you can directly jump to step 4. 
 
-1.__ Download [Python](https://www.python.org/ftp/python/3.11.5/python-3.11.5-amd64.exe) on official website__ 
+1. __Download [Python](https://www.python.org/ftp/python/3.11.5/python-3.11.5-amd64.exe) on official website__ 
   - Execute the installer wizard, `python-3.11.5-amd64.exe` for example.
     - ⚠️  Beware to tick the `Add python.exe to PATH` option on the first installation page before cliking the `Install Now` button.
     - Follow the installation procedure and choose default settings.
