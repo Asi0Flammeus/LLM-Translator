@@ -1,6 +1,20 @@
 # LLM-Translator
 
-LLM-Translator is a comprehensive tool designed to transcribe audio files utilizing OpenAI's Whisper API and subsequently manipulate the generated transcript through OpenAI's GPT-3.5 API. Additionally, the project offers the capability to translate the transcript into various languages utilizing GPT-3.5.
+LLM-Translator is a simple CLI tool to translate any `.txt` and `.md` files of any length in the supported languages by leveraging ChatGPT's API. 
+
+## Supported Languages 
+
+Texts and documents are translated into the Modern Standard version of the following languages:
+- [X] English
+- [X] German
+- [X] Spanish
+- [X] Italian
+- [X] Portuguese
+- [X] French
+- [X] Swedish
+- [X] Arabic
+- [X] Japanese
+
 
 ## Installation and Setup 
 
@@ -45,15 +59,15 @@ LLM-Translator has been successfully tested on Windows 11.
 
 By default, Python 3 and git are not already installed on Windows so I will also explain how to install them. If you already have those installed you can directly jump to step 4. 
 
-1.__ Download [Python](https://www.python.org/ftp/python/3.11.5/python-3.11.5-amd64.exe) on official website__ 
+1. **Download [Python](https://www.python.org/ftp/python/3.11.5/python-3.11.5-amd64.exe) on official website** 
   - Execute the installer wizard, `python-3.11.5-amd64.exe` for example.
     - ⚠️  Beware to tick the `Add python.exe to PATH` option on the first installation page before cliking the `Install Now` button.
     - Follow the installation procedure and choose default settings.
 
-2. __Download [GitBash](https://github.com/git-for-windows/git/releases/download/v2.42.0.windows.2/Git-2.42.0.2-64-bit.exe) on official website__
+2. **Download [GitBash](https://github.com/git-for-windows/git/releases/download/v2.42.0.windows.2/Git-2.42.0.2-64-bit.exe) on official website**
   - Execute the wizard installer, `git-2.42.0.2-64-bit.exe` for example.
   - Follow the installation procedure and choose default settings.
-3. Open Git Bash 
+3. **Open Git Bash**
 
 4. **Clone the Repository**  
    - `git clone https://github.com/Asi0Flammeus/LLM-Translator.git`
