@@ -16,7 +16,7 @@ class Controller():
         self.origin_language = self.view.get_origin_language()
         self.supported_languages_instance.set_origin_language_to(self.origin_language)
 
-        self.extensions = ['md', 'txt']
+        self.extensions = ['md', 'txt','.yml']
         self.folder_to_translate_path = self.view.get_folder_to_translate_path()
         self.input_subfolder_name = os.path.basename(self.folder_to_translate_path)
         self.text_to_translate_names = [f for f in os.listdir(self.folder_to_translate_path) if any(f.endswith(ext) for ext in self.extensions)]
