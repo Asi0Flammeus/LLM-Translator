@@ -14,6 +14,13 @@ Texts and documents are translated into the Modern Standard version of the follo
 - [X] Swedish
 - [X] Arabic
 - [X] Japanese
+- [X] Swahili
+- [X] Hausa
+- [X] Afrikaans
+
+You can manually add new languages by modifying `language_info` in `languages.py`.
+You can also change the prompt template by modifying `supported_languages/prompt_template.txt`. 
+Once modified, the program will automatically update the prompt of every supported languages.
 
 
 ## Installation and Setup 

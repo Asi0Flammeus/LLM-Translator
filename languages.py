@@ -57,7 +57,7 @@ class SupportedLanguages:
     def update_prompts_if_needed(self):
         current_english_prompt = self.read_prompt_from_file("en")
 
-        with open('./supported_languages/english_prompt_last_version.txt', 'r') as file:
+        with open('./supported_languages/prompt_template.txt', 'r') as file:
             stored_prompt = file.read().strip()
 
         # Case 1: If the English version has changed
