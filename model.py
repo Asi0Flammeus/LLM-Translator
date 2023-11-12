@@ -22,7 +22,7 @@ class OpenaiTranslationModel:
         self.temperature = 0.1
 
     def get_translated_text_from_to(self, origin_language, destination_language):
-        self.update_prompt_for_destination_language(destination_language)
+        self.update_prompt_for_(destination_language, origin_language)
         translated_chunks = []
         NUM_CHUNKS = len(self.text_to_translate.chunks)
         for i, chunk in enumerate(self.text_to_translate.chunks):
@@ -32,12 +32,17 @@ class OpenaiTranslationModel:
         translated_text = "\n".join(translated_chunks)
         return translated_text
 
-    def update_prompt_for_destination_language(self, destination_language):
-        self.prompt = self.supported_languages_instance.get_translation_prompt_for_destination(destination_language)
+    def update_prompt_for_(self, destination_language, origin_language):
+        prompt_template = self.supported_languages_instance.get_translation_prompt_for_destination(destination_language)
+        self.prompt = prompt_template.format(
+            origin_language=origin_language,
+            destination_language=destination_language
+        )
 
     def translate_a_single(self, chunk):
         try:
-            current_prompt = self.prompt + chunk
+            current_prompt = self.prompt + "This is the text to translate:\n" +chunk
+            print(current_prompt)
             return self.get_response_from_OpenAI_API_with(current_prompt)
         except Exception as e:
             self.error_handler.handle_error(e)
