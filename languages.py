@@ -25,7 +25,10 @@ class SupportedLanguages:
             {"name": "French", "code": "fr"},
             {"name": "Swedish", "code": "sv"},
             {"name": "Arabic", "code": "ar"},
-            {"name": "Japanese", "code": "ja"}
+            {"name": "Japanese", "code": "ja"},
+            {"name": "Swahili", "code": "sw"},
+            {"name": "Hausa", "code": "ha"},
+            {"name": "Afrikaans", "code": "af"}
         ]
 
         for lang_info in languages_info:
@@ -57,27 +60,47 @@ class SupportedLanguages:
         with open('./supported_languages/english_prompt_last_version.txt', 'r') as file:
             stored_prompt = file.read().strip()
 
+        # Case 1: If the English version has changed
         if current_english_prompt != stored_prompt:
-            print("Updating the prompt translation ...")
-            model = OpenaiTranslationModel(stored_prompt, [])
+            print("Updating prompt for supported languages ...\n")
+            self.update_all_prompts(stored_prompt)
+
+        # Case 2: If any language's prompt is empty
+        elif any(language.translation_prompt == "" for language in self.languages):
+            print("Updating prompt for new supported languages ...\n")
+            self.update_all_prompts(stored_prompt, update_empty_only=True)
+
+    def update_all_prompts(self, stored_prompt, update_empty_only=False):
+        model = OpenaiTranslationModel(stored_prompt, [])
+
+        if update_empty_only:
+            total_languages = sum(1 for language in self.languages if language.translation_prompt == "")
+        else:
             total_languages = len(self.languages)
-            for index, language in enumerate(self.languages):
-                # Check if the language is English
-                if language.code == "en":
-                    language.prompt = stored_prompt
-                else:
-                    prompt = f"You are a professional translator and your task is to precisely translate this text in {language.name}:\n\n {stored_prompt}"
-                    translated_prompt = model.get_response_from_OpenAI_API_with(prompt)
-                    language.prompt = translated_prompt
 
-                file_path = os.path.join('supported_languages', f'{language.code}.json')
-                with open(file_path, 'w') as json_file:
-                    json.dump({"prompt": language.prompt}, json_file, ensure_ascii=False, indent=4)
+        INDEX = 0
 
-                # Update and print the progress bar
-                progress = (index + 1) / total_languages
-                bar_length = 20  # Adjust the length of the progress bar
-                bar = '[' + '=' * int(progress * bar_length) + '>' + ' ' * (bar_length - int(progress * bar_length) - 1) + ']'
-                print(f'\r{bar} {int(progress * 100)}%', end='')
-            print("\nUpdate complete.\n")
+        for language in self.languages:
+            # Skip updating non-empty prompts if update_empty_only is True
+            if update_empty_only and language.translation_prompt != "":
+                continue
+
+            if language.code == "en":
+                language.translation_prompt = stored_prompt
+            else:
+                prompt = f"You are a professional translator and your task is to precisely translate this text in {language.name}:\n\n {stored_prompt}"
+                translated_prompt = model.get_response_from_OpenAI_API_with(prompt)
+                language.translation_prompt = translated_prompt
+
+            file_path = os.path.join('supported_languages', f'{language.code}.json')
+            with open(file_path, 'w') as json_file:
+                json.dump({"prompt": language.translation_prompt}, json_file, ensure_ascii=False, indent=4)
+
+            # Update and print the progress bar
+            progress = (INDEX + 1) / total_languages
+            INDEX += 1
+            bar_length = 20
+            bar = '[' + '=' * int(progress * bar_length) + '>' + ' ' * (bar_length - int(progress * bar_length) - 1) + ']'
+            print(f'\r{bar} {int(progress * 100)}%', end='')
+        print("\nUpdate complete.\n")
 
