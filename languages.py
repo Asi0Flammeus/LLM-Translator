@@ -27,8 +27,12 @@ class SupportedLanguages:
             {"name": "Arabic", "code": "ar"},
             {"name": "Japanese", "code": "ja"},
             {"name": "Swahili", "code": "sw"},
-            {"name": "Hausa", "code": "ha"},
-            {"name": "Afrikaans", "code": "af"}
+            {"name": "Afrikaans", "code": "af"},
+            {"name": "Greek", "code": "el"},
+            {"name": "Georgian", "code": "ka"},
+            {"name": "Turkish", "code": "tr"},
+            {"name": "Thai", "code": "th"},
+            {"name": "Danish", "code": "da"}
         ]
 
         for lang_info in languages_info:

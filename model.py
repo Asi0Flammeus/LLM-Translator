@@ -42,7 +42,6 @@ class OpenaiTranslationModel:
     def translate_a_single(self, chunk):
         try:
             current_prompt = self.prompt + "This is the text to translate:\n" +chunk
-            print(current_prompt)
             return self.get_response_from_OpenAI_API_with(current_prompt)
         except Exception as e:
             self.error_handler.handle_error(e)
