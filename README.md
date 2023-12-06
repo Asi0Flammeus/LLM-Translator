@@ -5,23 +5,31 @@ LLM-Translator is a simple CLI tool to translate any `.txt` and `.md` files of a
 ## Supported Languages 
 
 Texts and documents are translated into the Modern Standard version of the following languages:
-- [X] English
-- [X] German
-- [X] Spanish
-- [X] Italian
-- [X] Portuguese
-- [X] French
-- [X] Swedish
-- [X] Arabic
-- [X] Japanese
-- [X] Swahili
-- [X] Hausa
-- [X] Afrikaans
+
+| Language   | Code | Speculative Translation Accuracy |
+|------------|------|----------------------------------|
+| English    | en   | 1.00                             |
+| German     | de   | 0.90 - 0.95                      |
+| Spanish    | es   | 0.90 - 0.95                      |
+| Italian    | it   | 0.85 - 0.90                      |
+| Portuguese | pt   | 0.85 - 0.90                      |
+| French     | fr   | 0.90 - 0.95                      |
+| Swedish    | sv   | 0.80 - 0.85                      |
+| Arabic     | ar   | 0.70 - 0.80                      |
+| Japanese   | ja   | 0.70 - 0.80                      |
+| Swahili    | sw   | 0.75 - 0.80                      |
+| Afrikaans  | af   | 0.75 - 0.80                      |
+| Danish     | da   | 0.80 - 0.85                      |
+| Greek      | el   | 0.75 - 0.80                      |
+| Georgian   | ka   | 0.65 - 0.75                      |
+| Thai       | th   | 0.65 - 0.75                      |
+| Turkish    | tr   | 0.70 - 0.80                      |
+
 
 You can manually add new languages by modifying `language_info` in `languages.py`.
 You can also change the prompt template by modifying `supported_languages/prompt_template.txt`. 
 Once modified, the program will automatically update the prompt of every supported languages.
-
+Or you can modify the prompt to a specific language by edditing the associated `.json` file of the language in the `/supported_languages` folder.
 
 ## Installation and Setup 
 
