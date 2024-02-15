@@ -46,7 +46,7 @@ class SupportedLanguages:
                 data = json.load(file)
                 return data.get("prompt", "")
         except FileNotFoundError:
-            with open(file_path, 'w') as file:
+            with open(file_path, 'w',  encoding='utf8') as file:
                 json.dump({"prompt": ""}, file, indent=4)
             return ""
 
