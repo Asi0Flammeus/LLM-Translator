@@ -42,11 +42,11 @@ class SupportedLanguages:
     def read_prompt_from_file(self, language_code):
         file_path = os.path.join('supported_languages', f'{language_code}.json')
         try:
-            with open(file_path, 'r') as file:
+            with open(file_path, 'r', encoding='utf-8') as file:
                 data = json.load(file)
                 return data.get("prompt", "")
         except FileNotFoundError:
-            with open(file_path, 'w',  encoding='utf-8') as file:
+            with open(file_path, 'w', encoding='utf-8') as file:
                 json.dump({"prompt": ""}, file, indent=4)
             return ""
 
