@@ -61,7 +61,7 @@ class SupportedLanguages:
     def update_prompts_if_needed(self):
         current_english_prompt = self.read_prompt_from_file("en")
 
-        with open('./supported_languages/prompt_template.txt', 'r') as file:
+        with open('./supported_languages/prompt_template.txt', 'r', encoding='utf-8') as file:
             stored_prompt = file.read().strip()
 
         # Case 1: If the English version has changed
@@ -97,7 +97,7 @@ class SupportedLanguages:
                 language.translation_prompt = translated_prompt
 
             file_path = os.path.join('supported_languages', f'{language.code}.json')
-            with open(file_path, 'w') as json_file:
+            with open(file_path, 'w', encoding='utf-8') as json_file:
                 json.dump({"prompt": language.translation_prompt}, json_file, ensure_ascii=False, indent=4)
 
             # Update and print the progress bar
