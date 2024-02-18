@@ -52,7 +52,7 @@ class ViewCLI():
             return False
 
     def get_folder_to_translate_path(self):
-        root_dir = "./inputs/"
+        root_dir = "../inputs/"
         folders = [f.path for f in os.scandir(root_dir) if f.is_dir()]
 
         print()

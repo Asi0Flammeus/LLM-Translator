@@ -69,7 +69,7 @@ class Controller():
 
     def create_translated_text_path_for(self, destination_language):
         extension = self.get_file_extension()
-        self.translated_text_path = f"./outputs/{self.input_subfolder_name}/{os.path.splitext(os.path.basename(self.text_to_translate_path))[0]}_{destination_language}.{extension}"
+        self.translated_text_path = f"../outputs/{self.input_subfolder_name}/{os.path.splitext(os.path.basename(self.text_to_translate_path))[0]}_{destination_language}.{extension}"
 
     def get_file_extension(self):
         return os.path.splitext(self.text_to_translate_path)[1][1:]
@@ -83,7 +83,7 @@ class Controller():
             f.write(self.translated_text)
 
     def create_destination_if_needed(self):
-        destination = f"./outputs/{self.input_subfolder_name}"
+        destination = f"../outputs/{self.input_subfolder_name}"
         os.makedirs(destination, exist_ok=True)
 
     def update_processing_times(self):
