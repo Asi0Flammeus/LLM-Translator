@@ -3,4 +3,4 @@
 
 git pull
 cd scripts/
-python3 main.py << INPUTS
+python3 main.py 

@@ -40,7 +40,7 @@ class SupportedLanguages:
             self.languages.append(Language(lang_info["name"], lang_info["code"], prompt))
 
     def read_prompt_from_file(self, language_code):
-        file_path = os.path.join('supported_languages', f'{language_code}.json')
+        file_path = os.path.join('../supported_languages/', f'{language_code}.json')
         try:
             with open(file_path, 'r', encoding='utf-8') as file:
                 data = json.load(file)
@@ -61,7 +61,7 @@ class SupportedLanguages:
     def update_prompts_if_needed(self):
         current_english_prompt = self.read_prompt_from_file("en")
 
-        with open('./supported_languages/prompt_template.txt', 'r', encoding='utf-8') as file:
+        with open('../supported_languages/prompt_template.txt', 'r', encoding='utf-8') as file:
             stored_prompt = file.read().strip()
 
         # Case 1: If the English version has changed
