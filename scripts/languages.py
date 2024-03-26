@@ -32,7 +32,10 @@ class SupportedLanguages:
             {"name": "Georgian", "code": "ka"},
             {"name": "Turkish", "code": "tr"},
             {"name": "Thai", "code": "th"},
-            {"name": "Danish", "code": "da"}
+            {"name": "Danish", "code": "da"},
+            {"name": "Ukranian", "code": "uk"},
+            {"name": "Finnish", "code": "fi"},
+            {"name": "Hungarian", "code": "hu"}
         ]
 
         for lang_info in languages_info:
@@ -96,7 +99,7 @@ class SupportedLanguages:
                 translated_prompt = model.get_response_from_OpenAI_API_with(prompt)
                 language.translation_prompt = translated_prompt
 
-            file_path = os.path.join('supported_languages', f'{language.code}.json')
+            file_path = os.path.join('../supported_languages', f'{language.code}.json')
             with open(file_path, 'w', encoding='utf-8') as json_file:
                 json.dump({"prompt": language.translation_prompt}, json_file, ensure_ascii=False, indent=4)
 
