@@ -35,7 +35,8 @@ class SupportedLanguages:
             {"name": "Danish", "code": "da"},
             {"name": "Ukranian", "code": "uk"},
             {"name": "Finnish", "code": "fi"},
-            {"name": "Hungarian", "code": "hu"}
+            {"name": "Hungarian", "code": "hu"},
+            {"name": "Polish", "code": "pl"}
         ]
 
         for lang_info in languages_info:
