@@ -36,6 +36,7 @@ class SupportedLanguages:
             {"name": "Ukranian", "code": "uk"},
             {"name": "Finnish", "code": "fi"},
             {"name": "Hungarian", "code": "hu"},
+            {"name": "Vietnamese", "code": "vi"},
             {"name": "Polish", "code": "pl"}
         ]
 
