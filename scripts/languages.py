@@ -37,6 +37,7 @@ class SupportedLanguages:
             {"name": "Finnish", "code": "fi"},
             {"name": "Hungarian", "code": "hu"},
             {"name": "Vietnamese", "code": "vi"},
+            {"name": "Wolof", "code": "wo"},
             {"name": "Polish", "code": "pl"}
         ]
 
