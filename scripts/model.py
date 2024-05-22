@@ -15,7 +15,7 @@ class OpenaiTranslationModel:
 
         load_dotenv()
         openai.api_key = os.getenv("OPENAI_API_KEY")
-        self.model_engine = "gpt-4-0125-preview"
+        self.model_engine = "gpt-4o"
         self.error_handler = APIErrorHandler()
 
         self.prompt = ""
