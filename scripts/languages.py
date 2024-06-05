@@ -38,6 +38,10 @@ class SupportedLanguages:
             {"name": "Hungarian", "code": "hu"},
             {"name": "Vietnamese", "code": "vi"},
             {"name": "Wolof", "code": "wo"},
+            {"name": "Russian", "code": "ru"},
+            {"name": "Chinese (Mandarin)", "code": "zh"},
+            {"name": "Korean", "code": "ko"},
+            {"name": "Czech", "code": "cs"},
             {"name": "Polish", "code": "pl"}
         ]
 
