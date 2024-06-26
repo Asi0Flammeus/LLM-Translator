@@ -105,6 +105,9 @@ By default, Python 3 and git are not already installed on Windows so I will also
 
 6. **Install Required Libraries**:  
    - `pip install -r requirements.txt`
+7. **Make Script Executable**:
+   - `chmod +x ./run-LLM-Translator.sh` for Linux user
+   - `chmod +x ./run-LLM-Translator-on-windows.sh` for Windows user
 
 ## LLM-Translator Usage
 
@@ -113,8 +116,6 @@ Please follow these steps *each time* you want to run LLM-Translator:
 0. **Open a terminal (or Gitbash for windows users)**
   - Go to LLM-Translator directory
    - `cd LLM-Translator`
-  - Update the repository
-   - `git pull` 
 
 1. **activate the Python Environment**  
    - `source env/bin/activate` 
@@ -125,8 +126,8 @@ Please follow these steps *each time* you want to run LLM-Translator:
    - All the files in a subfolder should be written in the same language. 
 
 3. **Execute the Program**:  
-   - `python3 main.py` for linux users
-   - `python main.py` for windows users
+   - `.run-LLM-Translator.sh` for linux users
+   - `run-LLM-Translator-on-windows.sh` for windows users
 
 4. **Follow the On-screen Instructions** 
    
@@ -139,7 +140,7 @@ Please follow these steps *each time* you want to run LLM-Translator:
 - [X] Language Selection
 - [X] Improved Output Organization
 - [ ] Comprehensive Testing and Continuous Integration
-- [ ] Integration with ChatGPT-4 Model
+- [X] Integration with ChatGPT-4 Model
 - [ ] Development of a User-Friendly GUI
 - [ ] Integration with Additional LLM Models
 
