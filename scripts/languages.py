@@ -1,12 +1,15 @@
-import os
 import json
+import os
+
 from model import OpenaiTranslationModel
+
 
 class Language:
     def __init__(self, name, code, translation_prompt):
         self.name = name
         self.code = code
         self.translation_prompt = translation_prompt
+
 
 class SupportedLanguages:
     def __init__(self):
@@ -42,21 +45,24 @@ class SupportedLanguages:
             {"name": "Chinese (Mandarin)", "code": "zh"},
             {"name": "Korean", "code": "ko"},
             {"name": "Czech", "code": "cs"},
-            {"name": "Polish", "code": "pl"}
+            {"name": "Hebrew", "code": "hb"},
+            {"name": "Polish", "code": "pl"},
         ]
 
         for lang_info in languages_info:
             prompt = self.read_prompt_from_file(lang_info["code"])
-            self.languages.append(Language(lang_info["name"], lang_info["code"], prompt))
+            self.languages.append(
+                Language(lang_info["name"], lang_info["code"], prompt)
+            )
 
     def read_prompt_from_file(self, language_code):
-        file_path = os.path.join('../supported_languages/', f'{language_code}.json')
+        file_path = os.path.join("../supported_languages/", f"{language_code}.json")
         try:
-            with open(file_path, 'r', encoding='utf-8') as file:
+            with open(file_path, "r", encoding="utf-8") as file:
                 data = json.load(file)
                 return data.get("prompt", "")
         except FileNotFoundError:
-            with open(file_path, 'w', encoding='utf-8') as file:
+            with open(file_path, "w", encoding="utf-8") as file:
                 json.dump({"prompt": ""}, file, indent=4)
             return ""
 
@@ -71,7 +77,9 @@ class SupportedLanguages:
     def update_prompts_if_needed(self):
         current_english_prompt = self.read_prompt_from_file("en")
 
-        with open('../supported_languages/prompt_template.txt', 'r', encoding='utf-8') as file:
+        with open(
+            "../supported_languages/prompt_template.txt", "r", encoding="utf-8"
+        ) as file:
             stored_prompt = file.read().strip()
 
         # Case 1: If the English version has changed
@@ -88,7 +96,9 @@ class SupportedLanguages:
         model = OpenaiTranslationModel(stored_prompt, [])
 
         if update_empty_only:
-            total_languages = sum(1 for language in self.languages if language.translation_prompt == "")
+            total_languages = sum(
+                1 for language in self.languages if language.translation_prompt == ""
+            )
         else:
             total_languages = len(self.languages)
 
@@ -106,15 +116,25 @@ class SupportedLanguages:
                 translated_prompt = model.get_response_from_OpenAI_API_with(prompt)
                 language.translation_prompt = translated_prompt
 
-            file_path = os.path.join('../supported_languages', f'{language.code}.json')
-            with open(file_path, 'w', encoding='utf-8') as json_file:
-                json.dump({"prompt": language.translation_prompt}, json_file, ensure_ascii=False, indent=4)
+            file_path = os.path.join("../supported_languages", f"{language.code}.json")
+            with open(file_path, "w", encoding="utf-8") as json_file:
+                json.dump(
+                    {"prompt": language.translation_prompt},
+                    json_file,
+                    ensure_ascii=False,
+                    indent=4,
+                )
 
             # Update and print the progress bar
             progress = (INDEX + 1) / total_languages
             INDEX += 1
             bar_length = 20
-            bar = '[' + '=' * int(progress * bar_length) + '>' + ' ' * (bar_length - int(progress * bar_length) - 1) + ']'
-            print(f'\r{bar} {int(progress * 100)}%', end='')
+            bar = (
+                "["
+                + "=" * int(progress * bar_length)
+                + ">"
+                + " " * (bar_length - int(progress * bar_length) - 1)
+                + "]"
+            )
+            print(f"\r{bar} {int(progress * 100)}%", end="")
         print("\nUpdate complete.\n")
-
