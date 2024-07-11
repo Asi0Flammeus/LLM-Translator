@@ -10,15 +10,14 @@ class Controller():
 
         self.supported_languages = [language.name for language in self.supported_languages_instance.languages]
         self.code_languages = [language.code for language in self.supported_languages_instance.languages]
-        languages_dict = dict(zip(self.code_languages, self.supported_languages))
-        print(languages_dict)
+        self.languages_dict = dict(zip(self.code_languages, self.supported_languages))
 
         self.view = ViewCLI(self.supported_languages)
         if languages_code and origin_language_code and subfolder:
             origin_language_code = [origin_language_code]
 
-            self.translation_languages = [languages_dict[code] for code in languages_code]
-            self.origin_language = [languages_dict[code] for code in origin_language_code]
+            self.translation_languages = [self.languages_dict[code] for code in languages_code]
+            self.origin_language = [self.languages_dict[code] for code in origin_language_code]
             self.folder_to_translate_path = f'../inputs/{subfolder}'
         else:
             self.translation_languages = self.view.get_languages()
@@ -80,8 +79,10 @@ class Controller():
             self.estimate_remaining_time()
 
     def create_translated_text_path_for(self, destination_language):
+        reverse_dictionary = {value: key for key, value in self.languages_dict.items()}
+        destination_language_code = reverse_dictionary.get(destination_language, "Code not found")
         extension = self.get_file_extension()
-        self.translated_text_path = f"../outputs/{self.input_subfolder_name}/{os.path.splitext(os.path.basename(self.text_to_translate_path))[0]}_{destination_language}.{extension}"
+        self.translated_text_path = f"../outputs/{self.input_subfolder_name}/{os.path.splitext(os.path.basename(self.text_to_translate_path))[0]}_{destination_language_code}.{extension}"
 
     def get_file_extension(self):
         return os.path.splitext(self.text_to_translate_path)[1][1:]
