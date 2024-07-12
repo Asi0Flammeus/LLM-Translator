@@ -4,6 +4,10 @@ from view import ViewCLI
 import os
 import time
 
+script_directory = os.path.dirname(os.path.abspath(__file__))
+input_directory = os.path.join(os.path.dirname(script_directory), "inputs")
+output_directory = os.path.join(os.path.dirname(script_directory), "outputs")
+
 class Controller():
     def __init__(self, languages_code=None, origin_language_code=None, subfolder=None):
         self.supported_languages_instance = SupportedLanguages()
@@ -18,7 +22,7 @@ class Controller():
 
             self.translation_languages = [self.languages_dict[code] for code in languages_code]
             self.origin_language = [self.languages_dict[code] for code in origin_language_code]
-            self.folder_to_translate_path = f'../inputs/{subfolder}'
+            self.folder_to_translate_path = os.path.join(input_directory, f"{subfolder}")
         else:
             self.translation_languages = self.view.get_languages()
             self.origin_language = self.view.get_origin_language()
@@ -82,7 +86,8 @@ class Controller():
         reverse_dictionary = {value: key for key, value in self.languages_dict.items()}
         destination_language_code = reverse_dictionary.get(destination_language, "Code not found")
         extension = self.get_file_extension()
-        self.translated_text_path = f"../outputs/{self.input_subfolder_name}/{os.path.splitext(os.path.basename(self.text_to_translate_path))[0]}_{destination_language_code}.{extension}"
+        translated_text_filename = f"{os.path.splitext(os.path.basename(self.text_to_translate_path))[0]}_{destination_language_code}.{extension}"
+        self.translated_text_path = os.path.join(output_directory,self.input_subfolder_name, translated_text_filename)
 
     def get_file_extension(self):
         return os.path.splitext(self.text_to_translate_path)[1][1:]

@@ -4,6 +4,9 @@ import os
 from model import OpenaiTranslationModel
 
 
+script_directory = os.path.dirname(os.path.abspath(__file__))
+supported_languages_directory = os.path.join(os.path.dirname(script_directory), "supported_languages")
+
 class Language:
     def __init__(self, name, code, translation_prompt):
         self.name = name
@@ -56,7 +59,7 @@ class SupportedLanguages:
             )
 
     def read_prompt_from_file(self, language_code):
-        file_path = os.path.join("../supported_languages/", f"{language_code}.json")
+        file_path = os.path.join(supported_languages_directory, f"{language_code}.json")
         try:
             with open(file_path, "r", encoding="utf-8") as file:
                 data = json.load(file)
@@ -76,9 +79,9 @@ class SupportedLanguages:
 
     def update_prompts_if_needed(self):
         current_english_prompt = self.read_prompt_from_file("en")
-
+        template_file_path = os.path.join(supported_languages_directory, "prompt_template.txt")
         with open(
-            "../supported_languages/prompt_template.txt", "r", encoding="utf-8"
+            template_file_path, "r", encoding="utf-8"
         ) as file:
             stored_prompt = file.read().strip()
 
@@ -116,7 +119,7 @@ class SupportedLanguages:
                 translated_prompt = model.get_response_from_OpenAI_API_with(prompt)
                 language.translation_prompt = translated_prompt
 
-            file_path = os.path.join("../supported_languages", f"{language.code}.json")
+            file_path = os.path.join(supported_languages_directory, f"{language.code}.json")
             with open(file_path, "w", encoding="utf-8") as json_file:
                 json.dump(
                     {"prompt": language.translation_prompt},
