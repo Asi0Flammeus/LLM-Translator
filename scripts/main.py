@@ -10,10 +10,6 @@ def main():
 
     args = parser.parse_args()
 
-    print(args.languages)
-    print(args.origin)
-    print(args.subfolder)
-
     view = ViewCLI([])
     if args.languages and args.origin and args.subfolder:
         controller = Controller(args.languages, args.origin, args.subfolder)
