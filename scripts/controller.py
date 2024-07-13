@@ -28,12 +28,11 @@ class Controller():
             self.origin_language = self.view.get_origin_language()
             self.folder_to_translate_path = self.view.get_folder_to_translate_path()
 
-        print(self.translation_languages)
-        print(self.origin_language)
         self.supported_languages_instance.set_origin_language_to(self.origin_language)
 
         self.extensions = ['md', 'txt','.yml']
         self.input_subfolder_name = os.path.basename(self.folder_to_translate_path)
+        print(self.input_subfolder_name)
         self.text_to_translate_names = [f for f in os.listdir(self.folder_to_translate_path) if any(f.endswith(ext) for ext in self.extensions)]
 
         self.text_to_translate_path = ""
@@ -101,7 +100,7 @@ class Controller():
             f.write(self.translated_text)
 
     def create_destination_if_needed(self):
-        destination = f"../outputs/{self.input_subfolder_name}"
+        destination = os.path.join(output_directory, self.input_subfolder_name)
         os.makedirs(destination, exist_ok=True)
 
     def update_processing_times(self):
