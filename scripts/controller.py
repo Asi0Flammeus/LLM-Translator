@@ -32,7 +32,6 @@ class Controller():
 
         self.extensions = ['md', 'txt','.yml']
         self.input_subfolder_name = os.path.basename(self.folder_to_translate_path)
-        print(self.input_subfolder_name)
         self.text_to_translate_names = [f for f in os.listdir(self.folder_to_translate_path) if any(f.endswith(ext) for ext in self.extensions)]
 
         self.text_to_translate_path = ""
