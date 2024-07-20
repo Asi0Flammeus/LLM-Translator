@@ -1,5 +1,9 @@
 import os
 
+script_directory = os.path.dirname(os.path.abspath(__file__))
+input_directory = os.path.join(os.path.dirname(script_directory), "inputs")
+output_directory = os.path.join(os.path.dirname(script_directory), "outputs")
+
 class ViewCLI():
     def __init__(self, supported_languages):
         self.supported_languages = supported_languages
@@ -52,22 +56,23 @@ class ViewCLI():
             return False
 
     def get_folder_to_translate_path(self):
-        root_dir = "../inputs/"
-        folders = [f.path for f in os.scandir(root_dir) if f.is_dir()]
+        root_dir = input_directory
+        folder_paths = [f.path for f in os.scandir(root_dir) if f.is_dir()]
+        folder_names = [os.path.basename(path) for path in folder_paths]
 
         print()
         print("Select a folder to translate:")
-        for i, folder in enumerate(folders):
-            print(f"{i+1}. {folder}")
+        for i, folder_name in enumerate(folder_names):
+            print(f"{i+1}. {folder_name}")
 
         choice = int(input("Enter the number of the folder: "))
-        folder_path = folders[choice-1]
+        selected_folder_path = folder_paths[choice - 1]
 
-        return folder_path
+        return selected_folder_path
 
     def update_progress_bar(self, current, total):
-        progress = current / total * 100
-        print(f'Translations in Progress: [{current}/{total}] {progress:.2f}%')
+            progress = current / total * 100
+            print(f'Translations in Progress: [{current}/{total}] {progress:.2f}%')
 
     def work_in_progress(self, task):
         print()
