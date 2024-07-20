@@ -50,6 +50,9 @@ class SupportedLanguages:
             {"name": "Czech", "code": "cs"},
             {"name": "Hebrew", "code": "hb"},
             {"name": "Polish", "code": "pl"},
+            {"name": "Latvian", "code": "lv"},
+            {"name": "Estonian", "code": "et"},
+            
         ]
 
         for lang_info in languages_info:
