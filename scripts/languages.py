@@ -45,13 +45,15 @@ class SupportedLanguages:
             {"name": "Vietnamese", "code": "vi"},
             {"name": "Wolof", "code": "wo"},
             {"name": "Russian", "code": "ru"},
-            {"name": "Chinese (Mandarin)", "code": "zh"},
             {"name": "Korean", "code": "ko"},
             {"name": "Czech", "code": "cs"},
             {"name": "Hebrew", "code": "hb"},
             {"name": "Polish", "code": "pl"},
             {"name": "Latvian", "code": "lv"},
             {"name": "Estonian", "code": "et"},
+            {"name": "Indonesian", "code": "id"},
+            {"name": "Simplified chinese", "code": "zh-Hans"},
+            {"name": "Traditional chinese", "code": "zh-Hant"},
             
         ]
 
