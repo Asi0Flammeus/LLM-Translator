@@ -48,6 +48,7 @@ class SupportedLanguages:
             {"name": "Korean", "code": "ko"},
             {"name": "Czech", "code": "cs"},
             {"name": "Hebrew", "code": "hb"},
+            {"name": "Norwegian Bokmål", "code": "nb-NO"},
             {"name": "Polish", "code": "pl"},
             {"name": "Latvian", "code": "lv"},
             {"name": "Estonian", "code": "et"},
