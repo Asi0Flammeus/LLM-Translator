@@ -29,6 +29,7 @@ class SupportedLanguages:
             {"name": "Italian", "code": "it"},
             {"name": "Portuguese", "code": "pt"},
             {"name": "French", "code": "fr"},
+            {"name": "Romanian", "code": "ro"},
             {"name": "Swedish", "code": "sv"},
             {"name": "Arabic", "code": "ar"},
             {"name": "Japanese", "code": "ja"},
