@@ -42,6 +42,7 @@ class SupportedLanguages:
             {"name": "Danish", "code": "da"},
             {"name": "Ukranian", "code": "uk"},
             {"name": "Finnish", "code": "fi"},
+            {"name": "Farsi", "code": "fa"},
             {"name": "Hungarian", "code": "hu"},
             {"name": "Vietnamese", "code": "vi"},
             {"name": "Wolof", "code": "wo"},
